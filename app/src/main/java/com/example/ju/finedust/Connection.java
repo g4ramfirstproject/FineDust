@@ -21,7 +21,7 @@ public interface Connection {
     String fixURL = "_returnType="+returnType+
             "&pageNo="+pageNO+
             "&numOfRows="+numOfRows+
-            "&ServiceKey=";
+            "&ServiceKey="+serviceKey;
 
     String findMoniteringStation_URL = "MsrstnInfoInqireSvc/getNearbyMsrstnList?";
     String findLocalFineDust_URL = "ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?";
@@ -34,14 +34,14 @@ public interface Connection {
 
 
     //근처 측정소 정보
-    @GET(findMoniteringStation_URL+fixURL+serviceKey)
+    @GET(findMoniteringStation_URL+fixURL)
     Call<MoniteringStationreturns> getMoniteringStation(
             @Query("tmX") String tmX,
             @Query("tmY") String tmY
     );
 
     //측정소의 대기정보
-    @GET(findLocalFineDust_URL+fixURL+serviceKey)
+    @GET(findLocalFineDust_URL+fixURL)
     Call<StationDustreturns> getStationDust(
             @Query("stationName") String stationName,
             @Query("dataTerm") String dataTerm,
