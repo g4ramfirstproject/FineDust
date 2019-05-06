@@ -8,10 +8,8 @@ import android.widget.TextView;
 import butterknife.BindView;
 
 public class MainActivity extends AppCompatActivity {
-
-
+    static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
     private PermissionRequest permissionRequest;
-
     private CurrentLocation mlocation;
 
     @Override
