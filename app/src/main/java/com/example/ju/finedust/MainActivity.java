@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.stetho.Stetho;
+
 import butterknife.BindView;
 
 public class MainActivity extends AppCompatActivity {
