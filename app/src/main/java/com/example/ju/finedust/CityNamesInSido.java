@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import com.example.ju.finedust.Item.AreaInfoRetrofit;
 
 import java.util.List;
 
@@ -15,7 +18,7 @@ public class CityNamesInSido extends AppCompatActivity {
     RecyclerView recyclerViewCityName;
     AdapterCityName adapterCityName;
     Context contextThis;
-    List<GetInfoFromApi.AreaInfoRetrofit> cityList;
+    List<AreaInfoRetrofit> cityList;
     String sidoName;
 
     @Override
@@ -23,7 +26,7 @@ public class CityNamesInSido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_names_in_sido);
         recyclerViewCityName = findViewById(R.id.RecyclerViewCityName);
-        recyclerViewCityName.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewCityName.setLayoutManager(new GridLayoutManager(this,3));
         recyclerViewCityName.setItemAnimator(new DefaultItemAnimator());
         contextThis = this;
         init();
@@ -34,7 +37,7 @@ public class CityNamesInSido extends AppCompatActivity {
         GetInfoFromApi getInfoFromApi = new GetInfoFromApi();
         BookmarkCallback bookmarkCallback = new BookmarkCallback() {
             @Override
-            public void onSuccess(List<GetInfoFromApi.AreaInfoRetrofit> value) {
+            public void onSuccess(List<AreaInfoRetrofit> value) {
                 cityList = value;
                 adapterCityName = new AdapterCityName(cityList,contextThis);
                 recyclerViewCityName.setAdapter(adapterCityName);
@@ -49,7 +52,7 @@ public class CityNamesInSido extends AppCompatActivity {
 
     }
     public interface BookmarkCallback{
-        void onSuccess(List<GetInfoFromApi.AreaInfoRetrofit> value);
+        void onSuccess(List<AreaInfoRetrofit> value);
         void onError();
     }
 }

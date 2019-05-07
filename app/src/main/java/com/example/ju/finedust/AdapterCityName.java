@@ -9,13 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.ju.finedust.Item.AreaInfoRetrofit;
+
 import java.util.List;
 
 public class AdapterCityName extends RecyclerView.Adapter<AdapterCityName.HolderCityName> {
 
-    List<GetInfoFromApi.AreaInfoRetrofit> listAreaInfo;
+    List<AreaInfoRetrofit> listAreaInfo;
     Context parentContext;
-    AdapterCityName(List<GetInfoFromApi.AreaInfoRetrofit> areainfo, Context parentContext){
+    AdapterCityName(List<AreaInfoRetrofit> areainfo, Context parentContext){
         this.listAreaInfo = areainfo;
         this.parentContext = parentContext;
     }

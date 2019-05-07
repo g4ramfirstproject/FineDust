@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".CityNamesInSido">
     <android.support.v7.widget.RecyclerView
+        app:spanCount="3"
         android:id="@+id/RecyclerViewCityName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

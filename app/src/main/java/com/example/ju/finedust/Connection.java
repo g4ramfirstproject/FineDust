@@ -1,5 +1,6 @@
 package com.example.ju.finedust;
 
+import com.example.ju.finedust.Item.AreaInfoList;
 import com.example.ju.finedust.Item.StationDustreturns;
 import com.example.ju.finedust.Item.MoniteringStationreturns;
 import com.example.ju.finedust.Item.TM;
@@ -16,7 +17,7 @@ public interface Connection {
     String serviceKey = "87cT%2Fs7HFMgdsA2Yk2i3%2Bz%2FBRjNDquiyvrr3fFyYnHdwCmJU0Xy2ahBrSED4XZTvInfPB62j1%2BchnMJSkDZM3w%3D%3D";
 
     int pageNO = 1;
-    int numOfRows = 1;
+    int numOfRows = 25;
     String returnType = "json";
     String fixURL = "_returnType="+returnType+
             "&pageNo="+pageNO+
@@ -25,6 +26,7 @@ public interface Connection {
 
     String findMoniteringStation_URL = "MsrstnInfoInqireSvc/getNearbyMsrstnList?";
     String findLocalFineDust_URL = "ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?";
+    String getCityDustInfo_URL = "ArpltnInforInqireSvc/getCtprvnMesureSidoLIst?searchCondition=DAILY&";
 
     //카카오 REST Api 좌표 변환
     @Headers("Authorization: KakaoAK 24514f11cfa24621d324726a5606a2c4")
@@ -48,4 +50,9 @@ public interface Connection {
             @Query("ver") float ver
     );
 
+    //각 시도에 포함된 행정구역(구/군)의 미세먼지 정보
+    @GET(getCityDustInfo_URL+fixURL)
+    Call<AreaInfoList> getAreaInfo(
+            @Query(value = "sidoName") String sidoName,
+            @Query(value = "serviceKey", encoded = true) String serviceKey);
 }
