@@ -109,11 +109,11 @@
                 app:layout_constraintBottom_toTopOf="@+id/imageView8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView11"
+                app:layout_constraintTop_toBottomOf="@+id/MainTime_tv"
                 app:srcCompat="@drawable/dustblue" />
 
             <TextView
-                android:id="@+id/textView11"
+                android:id="@+id/MainTime_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
@@ -202,6 +202,7 @@
                 app:layout_constraintGuide_begin="450dp" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/MainrecyclerView"
                 android:layout_width="0dp"
                 android:layout_height="95dp"
                 android:layout_marginStart="8dp"
