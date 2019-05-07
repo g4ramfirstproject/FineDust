@@ -12,7 +12,6 @@ import retrofit2.http.Query;
 public interface Connection {
 
     String kakaoApiKey = "24514f11cfa24621d324726a5606a2c4";
-
     String serviceKey = "87cT%2Fs7HFMgdsA2Yk2i3%2Bz%2FBRjNDquiyvrr3fFyYnHdwCmJU0Xy2ahBrSED4XZTvInfPB62j1%2BchnMJSkDZM3w%3D%3D";
 
     int pageNO = 1;
