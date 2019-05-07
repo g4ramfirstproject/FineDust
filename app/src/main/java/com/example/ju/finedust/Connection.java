@@ -47,5 +47,7 @@ public interface Connection {
             @Query("dataTerm") String dataTerm,
             @Query("ver") float ver
     );
-
+    //현재전국미세먼지현황
+    @GET("openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureLIst?itemCode=PM10&dataGubun=HOUR&searchCondition=WEEK&pageNo=1&numOfRows=10&ServiceKey=87cT%2Fs7HFMgdsA2Yk2i3%2Bz%2FBRjNDquiyvrr3fFyYnHdwCmJU0Xy2ahBrSED4XZTvInfPB62j1%2BchnMJSkDZM3w%3D%3D&ver=1.3&_returnType=json")
+    Call<NationWideFineDustData> getNationWideFineDust();
 }
