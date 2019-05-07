@@ -59,7 +59,39 @@ public class NationWideFineDustActivity extends AppCompatActivity {
     @BindView(R.id.circle_seoul)
     CircleImageView circle_seoul;
     @BindView(R.id.measuretime_tv)
+    //측정시간
     TextView measuretime_tv;
+    //측정값
+    @BindView(R.id.gyeongggi_tv)
+    TextView  gyeongggi_tv;
+    @BindView(R.id.gangwon_tv)
+    TextView gangwon_tv;
+    @BindView(R.id.seoul_tv)
+    TextView seoult_tv;
+    @BindView(R.id.chungnam_tv)
+    TextView chungnam_tv;
+    @BindView(R.id.chungbuk_tv)
+    TextView chungbuk_tv;
+    @BindView(R.id.gyeongbuk_tv)
+    TextView gyeongbuk_tv;
+    @BindView(R.id.daejeon_tv)
+    TextView daejeon_tv;
+    @BindView(R.id.daegu_tv)
+    TextView daegu_tv;
+    @BindView(R.id.jeonbuk_tv)
+    TextView jeonbuk_tv;
+    @BindView(R.id.ulsan_tv)
+    TextView ulsan_tv;
+    @BindView(R.id.gwangju_tv)
+    TextView gwangju_tv;
+    @BindView(R.id.jeonnam_tv)
+    TextView jeonnam_tv;
+    @BindView(R.id.gyeongnam_tv)
+    TextView gyeongnam_tv;
+    @BindView(R.id.busan_tv)
+    TextView busan_tv;
+    @BindView(R.id.jeju_tv)
+    TextView jeju_tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +139,22 @@ public class NationWideFineDustActivity extends AppCompatActivity {
                 String  jeonnam = getNationWideFineDustData.getList().get(0).getJeonnam();
                 //측정시간settext
                 measuretime_tv.setText("측정시간: "+ dataTime);
+                //각지역마다 측정값 SETTEXT하기
+                gyeongggi_tv.setText(gyeonggi);
+                gangwon_tv.setText(gangwon);
+                seoult_tv.setText(seoul);
+                chungnam_tv.setText(chungnam);
+                chungbuk_tv.setText(chungbuk);
+                gyeongbuk_tv.setText(gyeongbuk);
+                daejeon_tv.setText(daejeon);
+                daegu_tv.setText(daegu);
+                jeonbuk_tv.setText(jeonbuk);
+                ulsan_tv.setText(ulsan);
+                gwangju_tv.setText(gwangju);
+                jeonnam_tv.setText(jeonnam);
+                gyeongnam_tv.setText(gyeongnam);
+                busan_tv.setText(busan);
+                jeju_tv.setText(jeju);
                 //측정값 arraylist에 담기
                 arrrNationWideList.add(Integer.parseInt(busan));
                 arrrNationWideList.add(Integer.parseInt(gyeonggi));
