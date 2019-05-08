@@ -1,5 +1,6 @@
 package com.example.ju.finedust;
 
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -8,9 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
@@ -26,8 +30,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -39,6 +45,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         viewSetup();
+
+
+        mlocation = new CurrentLocation(this);
+        mlocation.locationLookup();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);// main_menu 메뉴를 toolbar 메뉴 버튼으로 설정
+        return true;
     }
 
     @Override
@@ -59,8 +75,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationFineDustLevel = findViewById(R.id.MainFineDustLevel_tv);
         locationFineDustLevelText = findViewById(R.id.MainFineDustLevelText_tv);
         timeRecyclerView = findViewById(R.id.MainrecyclerView);
-        searchBtn = findViewById(R.id.MainAppBarSearch_iv);
-        shareBtn = findViewById(R.id.MainAppBarShare_iv);
+//        searchBtn = findViewById(R.id.MainAppBarSearch_iv);
+//        shareBtn = findViewById(R.id.MainAppBarShare_iv);
     }
 
 
@@ -70,22 +86,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        if (id == R.id.nav_nationwideFindDust) {
+            Intent intent = new Intent(MainActivity.this, NationWideFineDustActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_setting) {
 
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 }
