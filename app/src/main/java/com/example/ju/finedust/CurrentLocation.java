@@ -71,7 +71,7 @@ public class CurrentLocation {
                     Log.e("위도", String.valueOf(mlatitude));
                     Log.e("경도", String.valueOf(mlongitude));
 
-                    Toast.makeText(mcontext, "위도" + mlatitude + "경도" + mlongitude, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mcontext, "위도" + mlatitude + "경도" + mlongitude, Toast.LENGTH_SHORT).show();
                     transcoord();
                 }
 
