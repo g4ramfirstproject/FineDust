@@ -152,7 +152,6 @@ public class CurrentLocation {
 
     public void tmLookup() {
         locationLookup();
-
     }
 
     public void tmLookup(Handler handler){

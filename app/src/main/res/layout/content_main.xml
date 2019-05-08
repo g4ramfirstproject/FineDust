@@ -13,7 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ffffff"/>
-
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/MainRefreshLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -235,6 +238,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/imageView8" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>
+
 
 
 </LinearLayout>

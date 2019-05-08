@@ -1,11 +1,14 @@
 package com.example.ju.finedust;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +30,7 @@ import java.util.Date;
 
 import javax.security.auth.login.LoginException;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener{
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
     private PermissionRequest permissionRequest;
     private CurrentLocation mlocation;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText;
     private RecyclerView timeRecyclerView, dailyRecyclerView;
     private ImageView searchBtn, shareBtn;
+    private SwipeRefreshLayout refreshLayout;
 
     private CurrentLocation currentLocation;
     private StationDustreturns mStationDustreturns;
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewSetup();
         localDustlevelSetup();
         getCurrentTime();
+
     }
 
     @Override
@@ -95,9 +101,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationFineDustLevel = findViewById(R.id.MainFineDustLevel_tv);
         locationFineDustLevelText = findViewById(R.id.MainFineDustLevelText_tv);
         timeRecyclerView = findViewById(R.id.MainrecyclerView);
+        refreshLayout = findViewById(R.id.MainRefreshLayout);
+        refreshLayout.setOnRefreshListener(this);
 //        searchBtn = findViewById(R.id.MainAppBarSearch_iv);
 //        shareBtn = findViewById(R.id.MainAppBarShare_iv);
     }
+
+
 
     private String dustValuetoText(String dustvalue){
         int dustvalueint = Integer.parseInt(dustvalue);
@@ -152,5 +162,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String current = timeFormat.format(time);
         currentTime.setText(current);
 
+    }
+
+    @Override
+    public void onRefresh() {
+        localDustlevelSetup();
+        getCurrentTime();
+        refreshLayout.setRefreshing(false);
     }
 }
