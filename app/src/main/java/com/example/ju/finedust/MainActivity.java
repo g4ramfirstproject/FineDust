@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +23,8 @@ import com.example.ju.finedust.Item.StationDustreturns;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.security.auth.login.LoginException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewSetup();
         localDustlevelSetup();
+        getCurrentTime();
     }
 
     @Override
@@ -140,5 +144,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return false;
+    }
+
+    public void getCurrentTime(){
+        SimpleDateFormat timeFormat = new SimpleDateFormat ( "a hh시 mm분 ");
+        Date time = new Date();
+        String current = timeFormat.format(time);
+        currentTime.setText(current);
+
     }
 }
