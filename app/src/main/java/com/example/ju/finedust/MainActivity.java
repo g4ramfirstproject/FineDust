@@ -52,11 +52,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewSetup();
         localDustlevelSetup();
-
-
-
-        mlocation = new CurrentLocation(this);
-        mlocation.locationLookup();
     }
 
     @Override
