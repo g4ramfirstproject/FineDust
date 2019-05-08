@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,7 +35,7 @@ import javax.security.auth.login.LoginException;
 
 import butterknife.BindView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
     private PermissionRequest permissionRequest;
     private CurrentLocation mlocation;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView dailyRecyclerView;
     private ImageView searchBtn, shareBtn, finddustImage;
     private AdapterHourlyForecast mAdapter;
+    private SwipeRefreshLayout mainRefreshLayout;
 
     private CurrentLocation currentLocation;
     private StationDustreturns mStationDustreturns;
@@ -72,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewSetup();
         localDustlevelSetup();
         getCurrentTime();
-        setTimeRecyclerView();
     }
 
     @Override
@@ -110,16 +111,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationFineDustLevelText = findViewById(R.id.MainFineDustLevelText_tv);
         timeRecyclerView = findViewById(R.id.MainrecyclerView);
         finddustImage = findViewById(R.id.MainFineDustImage);
-    }
-    //시간별예보 리사이클러뷰
-    public void setTimeRecyclerView()
-    {
-
+        //시간별 리사이클러뷰
         mLayoutManger = new LinearLayoutManager(this);
         mLayoutManger.setOrientation(LinearLayoutManager.HORIZONTAL);
         timeRecyclerView.setLayoutManager(mLayoutManger);
         mAdapter = new AdapterHourlyForecast(getApplicationContext());
         timeRecyclerView.setAdapter(mAdapter);
+        //스와이프레이아웃
+        mainRefreshLayout = findViewById(R.id.MainRefreshLayout);
+        mainRefreshLayout.setOnRefreshListener(this);
     }
 
     private String dust10ValuetoText(int dustvalue){
@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public boolean handleMessage(Message msg) {
             if (msg.what == 0) {
+                mAdapter.clear();
                 mStationDustreturns = (StationDustreturns) msg.obj;
                 StationDustreturns.list dustvaluelist = mStationDustreturns.getList().get(0);
                 locationName.setText(mStationDustreturns.getStationName());
@@ -236,5 +237,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String current = timeFormat.format(time);
         currentTime.setText(current);
 
+    }
+
+    @Override
+    public void onRefresh() {
+        localDustlevelSetup();
+        getCurrentTime();
+
+        mainRefreshLayout.setRefreshing(false);
     }
 }

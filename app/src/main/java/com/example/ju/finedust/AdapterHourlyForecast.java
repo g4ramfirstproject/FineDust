@@ -62,5 +62,9 @@ public class AdapterHourlyForecast extends RecyclerView.Adapter<AdapterHourlyFor
     public void add(String dataTime, String pm10Value){
         itemHourlyForecastArrayList.add(new ItemHourlyForecast(dataTime,pm10Value));
         this.notifyDataSetChanged();
-}
+    }
+
+    public void clear(){
+        itemHourlyForecastArrayList.clear();
+    }
 }
