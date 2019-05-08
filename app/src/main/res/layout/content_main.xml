@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="65dp" />
+                app:layout_constraintGuide_begin="15dp" />
 
             <TextView
                 android:id="@+id/MainFineDustLevel_tv"
@@ -108,7 +108,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
             <ImageView
-                android:id="@+id/imageView9"
+                android:id="@+id/MainFineDustImage"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_marginStart="8dp"
@@ -119,7 +119,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/MainTime_tv"
-                app:srcCompat="@drawable/dustblue" />
+                app:srcCompat="@drawable/logo2" />
 
             <TextView
                 android:id="@+id/MainTime_tv"
@@ -186,7 +186,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="98dp" />
+                app:layout_constraintGuide_begin="64dp" />
 
             <ImageView
                 android:id="@+id/locationIcon_iv"

@@ -96,9 +96,9 @@ public class CurrentLocation {
                 return;
             }
 
-            if (isGPSEnable && isNetworkEnable) {
+            if (isGPSEnable) {
                 mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 100, mlocationListener);
-                mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 100, mlocationListener);
+                //mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 100, mlocationListener);
 
             } else if (!isGPSEnable) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
