@@ -1,5 +1,7 @@
 package com.example.ju.finedust;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.example.ju.finedust.Item.StationDustreturns;
@@ -17,10 +19,16 @@ public class FindMoniteringStation {
     private Retrofit client;
     private Connection apiService;
     private OkHttpClient stetho;
-    private String stationName = "";
+    private String mstationName = "";
+    private StationDustreturns mStationDustreturns;
+    private Handler mhandler;
 
+    public FindMoniteringStation(Handler handler){
+        this.mhandler = handler;
+        setUp();
+    }
 
-    public FindMoniteringStation() {
+    public void setUp() {
         stetho = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();
@@ -43,8 +51,10 @@ public class FindMoniteringStation {
             @Override
             public void onResponse(Call<MoniteringStationreturns> call, Response<MoniteringStationreturns> response) {
                 MoniteringStationreturns moniteringStationreturns = response.body();
-                stationName = moniteringStationreturns.getList().get(0).getStationName();
-                getLocalFineDust(stationName);
+                mstationName = moniteringStationreturns.getList().get(0).getStationName();
+
+                //측정소 대기현황 요청 메서드
+                getLocalFineDust(mstationName);
             }
 
             @Override
@@ -56,15 +66,21 @@ public class FindMoniteringStation {
     }
 
     //측정소 대기정보 가져오기
-    public void getLocalFineDust(String stationName) {
+    public void getLocalFineDust(final String mstationName) {
         String dataTerm = "DAILY";
-        float version = 1.0f;
-        Call<StationDustreturns> callBack = apiService.getStationDust(stationName, dataTerm, version);
+        float version = 1.3f;
+        Call<StationDustreturns> callBack = apiService.getStationDust(mstationName, dataTerm, version);
         callBack.enqueue(new Callback<StationDustreturns>() {
             @Override
             public void onResponse(Call<StationDustreturns> call, Response<StationDustreturns> response) {
-                StationDustreturns stationDustreturns = response.body();
-                Log.e("테스트 CallBack", "onResponse: " + stationDustreturns.getList().get(0));
+                //main 에서 쓸 대기정보객체 생성
+                mStationDustreturns = new StationDustreturns();
+                mStationDustreturns = response.body();
+                mStationDustreturns.setStationName(mstationName);
+                Message msg = mhandler.obtainMessage();
+                msg.what = 0;
+                msg.obj = mStationDustreturns;
+                mhandler.sendMessage(msg);
             }
 
             @Override

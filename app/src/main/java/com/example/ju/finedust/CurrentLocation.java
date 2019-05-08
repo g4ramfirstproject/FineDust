@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -31,9 +32,9 @@ public class CurrentLocation {
 
     Context mcontext;
 
-    LocationManager mlocationManager;
-    LocationListener mlocationListener;
-
+    private LocationManager mlocationManager;
+    private LocationListener mlocationListener;
+    private FindMoniteringStation mfindMoniteringStation;
     //위도
     double mlatitude;
     //경도
@@ -43,9 +44,10 @@ public class CurrentLocation {
     //TM Y
     String mTmY;
 
-    Retrofit retrofit;
-    OkHttpClient stetho;
-    Connection apiservice;
+    private Retrofit retrofit;
+    private OkHttpClient stetho;
+    private Connection apiservice;
+    private Handler mhandler;
 
     public CurrentLocation(Context context) {
         this.mcontext = context;
@@ -53,9 +55,9 @@ public class CurrentLocation {
     }
 
     //현재 위치에 따른 위도, 경도 받아오기
-    public void locationLookup(){
+    public void locationLookup() {
 
-        if(mlocationManager != null){
+        if (mlocationManager != null) {
 
             boolean isGPSEnable = mlocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean isNetworkEnable = mlocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -66,10 +68,11 @@ public class CurrentLocation {
                     mlatitude = location.getLatitude();
                     mlongitude = location.getLongitude();
 
-                    Log.e("위도" , String.valueOf(mlatitude));
-                    Log.e("경도" , String.valueOf(mlongitude));
+                    Log.e("위도", String.valueOf(mlatitude));
+                    Log.e("경도", String.valueOf(mlongitude));
 
                     Toast.makeText(mcontext, "위도" + mlatitude + "경도" + mlongitude, Toast.LENGTH_SHORT).show();
+                    transcoord();
                 }
 
                 @Override
@@ -93,18 +96,19 @@ public class CurrentLocation {
                 return;
             }
 
-            if(isGPSEnable && isNetworkEnable){
+            if (isGPSEnable && isNetworkEnable) {
                 mlocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 100, mlocationListener);
                 mlocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 100, 100, mlocationListener);
 
-            }else if(!isGPSEnable){
+            } else if (!isGPSEnable) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mcontext.startActivity(intent);
             }
         }
     }
+
     //받아온 위도 경도 - > TM 좌표로 변환
-    public void transcoord(){
+    public void transcoord() {
 
         Stetho.initializeWithDefaults(mcontext);
 
@@ -121,7 +125,7 @@ public class CurrentLocation {
 
         apiservice = retrofit.create(Connection.class);
 
-        Call<TM> call = apiservice.transcoord(126.9808842, 37.4806089, "WGS84", "TM");
+        Call<TM> call = apiservice.transcoord(mlongitude, mlatitude, "WGS84", "TM");
 
         call.enqueue(new Callback<TM>() {
             @Override
@@ -133,7 +137,10 @@ public class CurrentLocation {
                 mTmX = tm.getX();
                 mTmY = tm.getY();
 
-                Log.e("TM좌표" , mTmX+"     "+ mTmY);
+                mfindMoniteringStation = new FindMoniteringStation(mhandler);
+                mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY);
+
+                Log.e("TM좌표", mTmX + "     " + mTmY);
             }
 
             @Override
@@ -143,9 +150,14 @@ public class CurrentLocation {
         });
     }
 
-    public void tmLookup(){
+    public void tmLookup() {
         locationLookup();
-        transcoord();
+
+    }
+
+    public void tmLookup(Handler handler){
+        this.mhandler = handler;
+        tmLookup();
     }
 
     public double getMlatitude() {
