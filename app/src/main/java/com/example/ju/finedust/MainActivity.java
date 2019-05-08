@@ -20,6 +20,9 @@ import android.widget.Toast;
 
 import com.example.ju.finedust.Item.StationDustreturns;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
     private PermissionRequest permissionRequest;
