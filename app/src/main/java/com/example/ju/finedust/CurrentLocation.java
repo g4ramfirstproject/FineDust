@@ -47,6 +47,12 @@ public class CurrentLocation {
     OkHttpClient stetho;
     Connection apiservice;
 
+    CallbackFuncInterface callbackFuncInterface;
+
+    public void setCallbackfunc(CallbackFuncInterface callbackFuncInterface) {
+        this.callbackFuncInterface = callbackFuncInterface;
+    }
+
     public CurrentLocation(Context context) {
         this.mcontext = context;
         mlocationManager = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
@@ -121,8 +127,8 @@ public class CurrentLocation {
 
         apiservice = retrofit.create(Connection.class);
 
-        Call<TM> call = apiservice.transcoord(126.9808842, 37.4806089, "WGS84", "TM");
-
+        Call<TM> call = apiservice.transcoord(mlongitude, mlatitude, "WGS84", "TM");
+        String a = call.request().url().toString();
         call.enqueue(new Callback<TM>() {
             @Override
             public void onResponse(Call<TM> call, Response<TM> response) {
@@ -132,7 +138,8 @@ public class CurrentLocation {
                 Documents documents = list.get(0);
                 mTmX = tm.getX();
                 mTmY = tm.getY();
-
+                String[] a = {mTmX,mTmY};
+                callbackFuncInterface.onSuccess_getCityTmCoordinate(a);
                 Log.e("TM좌표" , mTmX+"     "+ mTmY);
             }
 
@@ -146,6 +153,14 @@ public class CurrentLocation {
     public void tmLookup(){
         locationLookup();
         transcoord();
+    }
+
+    public void setMlatitude(double mlatitude) {
+        this.mlatitude = mlatitude;
+    }
+
+    public void setMlongitude(double mlongitude) {
+        this.mlongitude = mlongitude;
     }
 
     public double getMlatitude() {

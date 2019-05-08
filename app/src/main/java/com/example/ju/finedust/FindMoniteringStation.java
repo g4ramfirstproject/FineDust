@@ -19,6 +19,11 @@ public class FindMoniteringStation {
     private OkHttpClient stetho;
     private String stationName = "";
 
+    CallbackFuncInterface callbackFuncInterface;
+
+    public void setCallbackFuncInterface(CallbackFuncInterface callbackFuncInterface) {
+        this.callbackFuncInterface = callbackFuncInterface;
+    }
 
     public FindMoniteringStation() {
         stetho = new OkHttpClient.Builder()
@@ -64,6 +69,7 @@ public class FindMoniteringStation {
             @Override
             public void onResponse(Call<StationDustreturns> call, Response<StationDustreturns> response) {
                 StationDustreturns stationDustreturns = response.body();
+                callbackFuncInterface.onSuccess_getDusInfoFromMoniteringStation(stationDustreturns.getList().get(0));
                 Log.e("테스트 CallBack", "onResponse: " + stationDustreturns.getList().get(0));
             }
 

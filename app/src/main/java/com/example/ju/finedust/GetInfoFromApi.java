@@ -22,7 +22,7 @@ import retrofit2.http.Query;
 
 public class GetInfoFromApi {
 
-    public void GetCityInfo(final Context parentContext, String sidoName, final CityNamesInSido.BookmarkCallback callback){
+    public void GetCityInfo(final Context parentContext, String sidoName, final CallbackFuncInterface callback){
         final List<AreaInfoRetrofit> cityInfosNotDup = new ArrayList<>();
         Retrofit retrofit;
         String api_key = parentContext.getString(R.string.api_key);
@@ -50,7 +50,7 @@ public class GetInfoFromApi {
                         }
                     }
                 }
-                callback.onSuccess(cityInfosNotDup);
+                callback.onSuccess_getCityDustInfo(cityInfosNotDup);
             }
             @Override
             public void onFailure(Call<AreaInfoList> call, Throwable t) {

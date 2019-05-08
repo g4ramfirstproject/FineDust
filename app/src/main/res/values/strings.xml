@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FineDust</string>
     <string name="api_key">87cT%2Fs7HFMgdsA2Yk2i3%2Bz%2FBRjNDquiyvrr3fFyYnHdwCmJU0Xy2ahBrSED4XZTvInfPB62j1%2BchnMJSkDZM3w%3D%3D</string>
+    <string name="api_key_googlemap">AIzaSyBdI4hf8XJHK7U5oUzMAOkhsmQXSZMTEro</string>
 </resources>

@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.ju.finedust.Item.AreaInfoRetrofit;
+import com.example.ju.finedust.Item.StationDustreturns;
 
 import java.util.List;
 
@@ -35,24 +36,7 @@ public class CityNamesInSido extends AppCompatActivity {
         Intent intent = getIntent();
         sidoName = intent.getStringExtra("sidoName");
         GetInfoFromApi getInfoFromApi = new GetInfoFromApi();
-        BookmarkCallback bookmarkCallback = new BookmarkCallback() {
-            @Override
-            public void onSuccess(List<AreaInfoRetrofit> value) {
-                cityList = value;
-                adapterCityName = new AdapterCityName(cityList,contextThis);
-                recyclerViewCityName.setAdapter(adapterCityName);
-            }
+//        getInfoFromApi.GetCityInfo(this,sidoName,bookmarkCallback);
 
-            @Override
-            public void onError() {
-
-            }
-        };
-        getInfoFromApi.GetCityInfo(this,sidoName,bookmarkCallback);
-
-    }
-    public interface BookmarkCallback{
-        void onSuccess(List<AreaInfoRetrofit> value);
-        void onError();
     }
 }
