@@ -56,7 +56,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
-                android:text="보통"
+                android:text=""
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView8"
                 app:layout_constraintEnd_toStartOf="@+id/MainDustLevel_tv"
@@ -72,7 +72,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
-                android:text="40"
+                android:text=""
                 android:textColor="@color/colorPrimary"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="@+id/MainDustLevelText_tv"
@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="65dp" />
+                app:layout_constraintGuide_begin="15dp" />
 
             <TextView
                 android:id="@+id/MainFineDustLevel_tv"
@@ -95,7 +95,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center"
-                android:text="12"
+                android:text=""
                 android:textColor="@color/colorPrimary"
                 android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="@+id/MainFineDustLevelText_tv"
@@ -116,7 +116,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/MainTime_tv"
-                app:srcCompat="@drawable/dustblue" />
+                app:srcCompat="@drawable/logo2" />
 
             <TextView
                 android:id="@+id/MainTime_tv"
@@ -124,7 +124,7 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="오후 7시 50분"
+                android:text=""
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -151,7 +151,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:gravity="center"
-                android:text="동작구"
+                android:text=""
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toTopOf="@+id/guideline4"
@@ -168,7 +168,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:gravity="center"
-                android:text="매우나쁨"
+                android:text=""
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/imageView8"
                 app:layout_constraintEnd_toStartOf="@+id/MainFineDustLevel_tv"
@@ -183,7 +183,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="98dp" />
+                app:layout_constraintGuide_begin="64dp" />
 
             <ImageView
                 android:id="@+id/locationIcon_iv"
