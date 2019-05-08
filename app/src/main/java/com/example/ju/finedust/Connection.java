@@ -15,7 +15,7 @@ public interface Connection {
     String serviceKey = "87cT%2Fs7HFMgdsA2Yk2i3%2Bz%2FBRjNDquiyvrr3fFyYnHdwCmJU0Xy2ahBrSED4XZTvInfPB62j1%2BchnMJSkDZM3w%3D%3D";
 
     int pageNO = 1;
-    int numOfRows = 1;
+    int numOfRows = 24;
     String returnType = "json";
     String fixURL = "_returnType="+returnType+
             "&pageNo="+pageNO+
