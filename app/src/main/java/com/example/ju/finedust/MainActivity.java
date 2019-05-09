@@ -147,9 +147,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(resultCode == RESULT_OK){
             switch (requestCode){
                 case 0:
-                    currentLocation.setMlatitude(data.getDoubleExtra("Lat",0));
-                    currentLocation.setMlongitude(data.getDoubleExtra("Lng",0));
-                    currentLocation.transcoord();
+                    Double lat = data.getDoubleExtra("Lat",0);
+                    Double lng = data.getDoubleExtra("Lng",0);
+                    currentLocation.transcoord(lng,lat);
                     break;
             }
         }
