@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.ju.finedust.Item.ItemHourlyForecast;
@@ -25,6 +26,8 @@ import com.example.ju.finedust.Item.StationDustreturns;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 
@@ -72,6 +75,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_search :
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivityForResult(intent,0);
+                return true ;
+            default :
+                return super.onOptionsItemSelected(item) ;
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);// main_menu 메뉴를 toolbar 메뉴 버튼으로 설정
@@ -123,6 +137,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //스와이프레이아웃
         mainRefreshLayout = findViewById(R.id.MainRefreshLayout);
         mainRefreshLayout.setOnRefreshListener(this);
+
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            switch (requestCode){
+                case 0:
+                    currentLocation.setMlatitude(data.getDoubleExtra("Lat",0));
+                    currentLocation.setMlongitude(data.getDoubleExtra("Lng",0));
+                    currentLocation.transcoord();
+                    break;
+            }
+        }
     }
 
     private String dust10ValuetoText(int dustvalue){
@@ -244,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Date time = new Date();
         String current = timeFormat.format(time);
         currentTime.setText(current);
-
     }
 
     @Override
