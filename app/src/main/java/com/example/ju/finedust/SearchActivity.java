@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.example.ju.finedust.Item.StationDustreturns;
 import com.google.android.gms.common.api.Status;
@@ -33,6 +35,8 @@ public class SearchActivity extends AppCompatActivity {
     }
     void init(){
 
+        ImageButton a = findViewById(R.id.places_autocomplete_search_button);
+        a.setVisibility(View.INVISIBLE);
         apiKeyGooglePlaces = getString(R.string.api_key_googlemap);
         // Initialize Places.
         Places.initialize(getApplicationContext(), apiKeyGooglePlaces);
@@ -55,31 +59,6 @@ public class SearchActivity extends AppCompatActivity {
                 resultIntent.putExtra("Lng",place.getLatLng().longitude);
                 setResult(RESULT_OK,resultIntent);
                 finish();
-
-//                mfindMoniteringStation = new FindMoniteringStation();
-//                final CurrentLocation currentLocation = new CurrentLocation(contextThis);
-//
-//                CallbackFuncInterface callbackFuncInterface = new CallbackFuncInterface() {
-//                    @Override
-//                    public void onSuccess_getCityTmCoordinate(String[] strings) {
-//                        mfindMoniteringStation.getUserLocalMoniteringStation(currentLocation.mTmX,currentLocation.mTmY);
-//                    }
-//
-//                    @Override
-//                    public void onSuccess_getCityDustInfo(List<AreaInfoRetrofit> areaInfoRetrofitList) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onSuccess_getDusInfoFromMoniteringStation(StationDustreturns.list stationDustreturns) {
-//                        Log.i("FromMoniteringStation",stationDustreturns.getPm10Grade());
-//                    }
-//                };
-//                mfindMoniteringStation.setCallbackFuncInterface(callbackFuncInterface);
-//                currentLocation.setCallbackfunc(callbackFuncInterface);
-//                currentLocation.setMlongitude(place.getLatLng().longitude);
-//                currentLocation.setMlatitude(place.getLatLng().latitude);
-//                currentLocation.transcoord();
             }
 
             @Override
