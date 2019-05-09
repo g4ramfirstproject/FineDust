@@ -1,7 +1,7 @@
 package com.example.ju.finedust;
 
 import android.app.ProgressDialog;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -16,20 +16,25 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.example.ju.finedust.Item.ItemHourlyForecast;
-import com.example.ju.finedust.Item.StationDustreturns;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import butterknife.BindView;
+import com.example.ju.finedust.Item.StationDustreturns;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
@@ -47,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private LinearLayoutManager mLayoutManger;
     private ProgressDialog mprogressDialog;
+
+    private String apiKeyGooglePlaces;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +79,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         localDustlevelSetup();
         getCurrentTime();
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        searchApiInit();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_search :
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-                startActivityForResult(intent,0);
-                return true ;
-            default :
+                      default :
                 return super.onOptionsItemSelected(item) ;
         }
     }
@@ -282,5 +290,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getCurrentTime();
 
         mainRefreshLayout.setRefreshing(false);
+    }
+
+    void searchApiInit(){
+        ImageButton a = findViewById(R.id.places_autocomplete_search_button);
+        a.setImageResource(R.color.colorGood);
+
+        apiKeyGooglePlaces = getString(R.string.api_key_googlemap);
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), apiKeyGooglePlaces);
+
+        // Create a new Places client instance.
+        final PlacesClient placesClient = Places.createClient(this);
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("Lat",place.getLatLng().latitude);
+                resultIntent.putExtra("Lng",place.getLatLng().longitude);
+                setResult(RESULT_OK,resultIntent);
+                finish();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("SidoName_autocomplete", "An error occurred: " + status);
+            }
+        });
     }
 }
