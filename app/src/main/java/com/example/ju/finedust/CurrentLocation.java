@@ -44,6 +44,14 @@ public class CurrentLocation {
     //TM Y
     String mTmY;
 
+    public void setMlatitude(double mlatitude) {
+        this.mlatitude = mlatitude;
+    }
+
+    public void setMlongitude(double mlongitude) {
+        this.mlongitude = mlongitude;
+    }
+
     private Retrofit retrofit;
     private OkHttpClient stetho;
     private Connection apiservice;
