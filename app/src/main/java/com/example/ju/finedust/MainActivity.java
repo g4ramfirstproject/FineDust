@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewSetup();
         localDustlevelSetup();
         getCurrentTime();
+
+
     }
 
     @Override
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //현재위치 대기정보 가져오기
         currentLocation = new CurrentLocation(this);
+        currentLocation.getCurrentLocation();
         currentLocation.tmLookup(mhandler);
     }
 

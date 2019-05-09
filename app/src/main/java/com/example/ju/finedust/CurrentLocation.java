@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,6 +19,10 @@ import com.example.ju.finedust.Item.Documents;
 import com.example.ju.finedust.Item.TM;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
@@ -36,25 +41,127 @@ public class CurrentLocation {
     private LocationListener mlocationListener;
     private FindMoniteringStation mfindMoniteringStation;
     //위도
-    double mlatitude;
+    private double mlatitude;
     //경도
-    double mlongitude;
+    private double mlongitude;
     //TM X
-    String mTmX;
+    private String mTmX;
     //TM Y
-    String mTmY;
+    private String mTmY;
 
     private Retrofit retrofit;
     private OkHttpClient stetho;
     private Connection apiservice;
     private Handler mhandler;
 
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private OnCompleteListener<Location> mCompleteListener;
+
     public CurrentLocation(Context context) {
         this.mcontext = context;
-        mlocationManager = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
+        //mlocationManager = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mcontext);
+        mCompleteListener = new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if(task.isSuccessful() && task.getResult() != null){
+                    Location mCurrentLocation = task.getResult();
+//                    Toast.makeText(mcontext, "lat : " + mCurrentLocation.getLatitude()
+//                            + "lng" +mCurrentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+
+                    Log.e("새로운 위도", String.valueOf(mCurrentLocation.getLatitude()));
+                    Log.e("새로운 경도", String.valueOf(mCurrentLocation.getLongitude()));
+                    double latitude = mCurrentLocation.getLatitude();
+                    double longitude = mCurrentLocation.getLongitude();
+
+                    transcoord(longitude, latitude);
+                }
+                else{
+
+                }
+            }
+        };
+    }
+    //현재 위치에 따른 위도, 경도 받아오기
+    public void getCurrentLocation(){
+
+        if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(mcontext, "위치 권한을 허용 해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mFusedLocationProviderClient.getLastLocation()
+                .addOnCompleteListener(mCompleteListener);
     }
 
-    //현재 위치에 따른 위도, 경도 받아오기
+    //받아온 위도 경도 - > TM 좌표로 변환
+    public void transcoord(double longitude, double latitude) {
+
+        Stetho.initializeWithDefaults(mcontext);
+
+        stetho = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://dapi.kakao.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(stetho)
+                .build();
+
+
+        apiservice = retrofit.create(Connection.class);
+
+        Call<TM> call = apiservice.transcoord(longitude, latitude, "WGS84", "TM");
+
+        call.enqueue(new Callback<TM>() {
+            @Override
+            public void onResponse(Call<TM> call, Response<TM> response) {
+                TM tm = response.body();
+                Log.e("응답TM", tm.toString());
+                List<Documents> list = tm.getDocuments();
+                Documents documents = list.get(0);
+                mTmX = tm.getX();
+                mTmY = tm.getY();
+
+                mfindMoniteringStation = new FindMoniteringStation(mhandler);
+                mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY);
+
+                Log.e("TM좌표", mTmX + "     " + mTmY);
+            }
+
+            @Override
+            public void onFailure(Call<TM> call, Throwable t) {
+                Toast.makeText(mcontext, "요청 실패", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void tmLookup() {
+        getCurrentLocation();
+    }
+
+    public void tmLookup(Handler handler){
+        this.mhandler = handler;
+        tmLookup();
+    }
+
+    public double getMlatitude() {
+        return mlatitude;
+    }
+
+    public double getMlongitude() {
+        return mlongitude;
+    }
+
+    public String getmTmX() {
+        return mTmX;
+    }
+
+    public String getmTmY() {
+        return mTmY;
+    }
+
     public void locationLookup() {
 
         if (mlocationManager != null) {
@@ -71,8 +178,7 @@ public class CurrentLocation {
                     Log.e("위도", String.valueOf(mlatitude));
                     Log.e("경도", String.valueOf(mlongitude));
 
-                    //Toast.makeText(mcontext, "위도" + mlatitude + "경도" + mlongitude, Toast.LENGTH_SHORT).show();
-                    transcoord();
+                    transcoord(mlongitude, mlatitude);
                 }
 
                 @Override
@@ -105,73 +211,5 @@ public class CurrentLocation {
                 mcontext.startActivity(intent);
             }
         }
-    }
-
-    //받아온 위도 경도 - > TM 좌표로 변환
-    public void transcoord() {
-
-        Stetho.initializeWithDefaults(mcontext);
-
-        stetho = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .build();
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://dapi.kakao.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(stetho)
-                .build();
-
-
-        apiservice = retrofit.create(Connection.class);
-
-        Call<TM> call = apiservice.transcoord(mlongitude, mlatitude, "WGS84", "TM");
-
-        call.enqueue(new Callback<TM>() {
-            @Override
-            public void onResponse(Call<TM> call, Response<TM> response) {
-                TM tm = response.body();
-                Log.e("응답TM", tm.toString());
-                List<Documents> list = tm.getDocuments();
-                Documents documents = list.get(0);
-                mTmX = tm.getX();
-                mTmY = tm.getY();
-
-                mfindMoniteringStation = new FindMoniteringStation(mhandler);
-                mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY);
-
-                Log.e("TM좌표", mTmX + "     " + mTmY);
-            }
-
-            @Override
-            public void onFailure(Call<TM> call, Throwable t) {
-                Toast.makeText(mcontext, "요청 실패", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void tmLookup() {
-        locationLookup();
-    }
-
-    public void tmLookup(Handler handler){
-        this.mhandler = handler;
-        tmLookup();
-    }
-
-    public double getMlatitude() {
-        return mlatitude;
-    }
-
-    public double getMlongitude() {
-        return mlongitude;
-    }
-
-    public String getmTmX() {
-        return mTmX;
-    }
-
-    public String getmTmY() {
-        return mTmY;
     }
 }
