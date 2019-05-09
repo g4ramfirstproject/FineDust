@@ -1,5 +1,6 @@
 package com.example.ju.finedust;
 
+import android.app.ProgressDialog;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -12,26 +13,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.ju.finedust.Item.ItemHourlyForecast;
 import com.example.ju.finedust.Item.StationDustreturns;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import javax.security.auth.login.LoginException;
 
 import butterknife.BindView;
 
@@ -41,22 +34,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CurrentLocation mlocation;
 
     private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText;
-    private RecyclerView dailyRecyclerView;
-    private ImageView searchBtn, shareBtn, finddustImage;
+    private RecyclerView dailyRecyclerView,timeRecyclerView;
+    private ImageView finddustImage;
     private AdapterHourlyForecast mAdapter;
     private SwipeRefreshLayout mainRefreshLayout;
 
     private CurrentLocation currentLocation;
     private StationDustreturns mStationDustreturns;
-    //시간별예보 리사이클러뷰
-    @BindView(R.id.MainrecyclerView)
-    RecyclerView timeRecyclerView;
-    LinearLayoutManager mLayoutManger;
-    ArrayList<ItemHourlyForecast>ArrItemHourlyForecast = new ArrayList<>();
+
+    private LinearLayoutManager mLayoutManger;
+    private ProgressDialog mprogressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        startProgressbar();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -92,6 +86,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void startProgressbar(){
+        mprogressDialog = new ProgressDialog(this);
+        mprogressDialog.setMessage("위치정보를 받아오는 중 입니다");
+        mprogressDialog.show();
+    }
+
     private void localDustlevelSetup() {
         //위치정보 퍼미션
         permissionRequest = new PermissionRequest(this);
@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationDustLevelText = findViewById(R.id.MainDustLevelText_tv);
         locationFineDustLevel = findViewById(R.id.MainFineDustLevel_tv);
         locationFineDustLevelText = findViewById(R.id.MainFineDustLevelText_tv);
-        timeRecyclerView = findViewById(R.id.MainrecyclerView);
         finddustImage = findViewById(R.id.MainFineDustImage);
         //시간별 리사이클러뷰
+        timeRecyclerView = findViewById(R.id.MainrecyclerView);
         mLayoutManger = new LinearLayoutManager(this);
         mLayoutManger.setOrientation(LinearLayoutManager.HORIZONTAL);
         timeRecyclerView.setLayoutManager(mLayoutManger);
@@ -192,6 +192,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mAdapter.clear();
                 mStationDustreturns = (StationDustreturns) msg.obj;
                 StationDustreturns.list dustvaluelist = mStationDustreturns.getList().get(0);
+                if(dustvaluelist.getPm10Value().equals("-") || dustvaluelist.getPm25Value().equals("-")){
+                    dustvaluelist = mStationDustreturns.getList().get(1);
+                }
                 locationName.setText(mStationDustreturns.getStationName());
                 locationDustLevel.setText(dustvaluelist.getPm10Value());
                 locationFineDustLevel.setText(dustvaluelist.getPm25Value());
@@ -208,6 +211,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 }
+
+                mprogressDialog.dismiss();
             }
             return false;
         }
