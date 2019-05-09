@@ -1,6 +1,7 @@
 package com.example.ju.finedust;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -54,11 +55,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressDialog mprogressDialog;
 
     private String apiKeyGooglePlaces;
-
+    private Context co_this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_menu);
+        co_this = this;
 
         startProgressbar();
 
@@ -90,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_search:
+                return true;
                       default :
                 return super.onOptionsItemSelected(item) ;
         }
@@ -146,21 +151,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainRefreshLayout = findViewById(R.id.MainRefreshLayout);
         mainRefreshLayout.setOnRefreshListener(this);
 
-    }
-
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK){
-            switch (requestCode){
-                case 0:
-                    Double lat = data.getDoubleExtra("Lat",0);
-                    Double lng = data.getDoubleExtra("Lng",0);
-                    currentLocation.transcoord(lng,lat);
-                    break;
-            }
-        }
     }
 
     private String dust10ValuetoText(int dustvalue){
@@ -295,31 +285,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     void searchApiInit(){
         ImageButton a = findViewById(R.id.places_autocomplete_search_button);
         a.setImageResource(R.color.colorGood);
-
+        ImageButton b = findViewById(R.id.places_autocomplete_clear_button);
+        b.setImageResource(R.color.colorGood);
         apiKeyGooglePlaces = getString(R.string.api_key_googlemap);
         // Initialize Places.
         Places.initialize(getApplicationContext(), apiKeyGooglePlaces);
-
         // Create a new Places client instance.
-        final PlacesClient placesClient = Places.createClient(this);
+        final PlacesClient placesClient = Places.createClient(co_this);
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
+        autocompleteFragment.setHint("");
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("Lat",place.getLatLng().latitude);
-                resultIntent.putExtra("Lng",place.getLatLng().longitude);
-                setResult(RESULT_OK,resultIntent);
-                finish();
+                currentLocation.transcoord(place.getLatLng().longitude,place.getLatLng().latitude);
             }
-
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
