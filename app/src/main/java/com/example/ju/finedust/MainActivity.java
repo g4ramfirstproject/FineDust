@@ -1,6 +1,9 @@
 package com.example.ju.finedust;
 
 import android.app.ProgressDialog;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -16,6 +19,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +28,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.ju.finedust.Item.ItemHourlyForecast;
 import com.example.ju.finedust.Item.StationDustreturns;
+import com.kakao.kakaolink.v2.KakaoLinkResponse;
+import com.kakao.kakaolink.v2.KakaoLinkService;
+import com.kakao.message.template.ButtonObject;
+import com.kakao.message.template.ContentObject;
+import com.kakao.message.template.FeedTemplate;
+import com.kakao.message.template.LinkObject;
+import com.kakao.message.template.SocialObject;
+import com.kakao.network.ErrorResult;
+import com.kakao.network.callback.ResponseCallback;
+
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewSetup();
         localDustlevelSetup();
         getCurrentTime();
-
-
     }
 
     @Override
@@ -82,6 +96,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 startActivityForResult(intent,0);
                 return true ;
+            case R.id.menu_share:
+                FeedTemplate params = FeedTemplate
+                        .newBuilder(ContentObject.newBuilder("미세그램",
+                                "https://raw.githubusercontent.com/g4ramfirstproject/FineDust/master/logo2.png",
+                                LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
+                                        .setMobileWebUrl("https://developers.kakao.com").build())
+                                .setDescrption("오늘미세먼지수고하셨습니다.")
+                                .build())
+                        .addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
+                                .setWebUrl("'https://developers.kakao.com")
+                                .setMobileWebUrl("'https://developers.kakao.com")
+                                .setAndroidExecutionParams("key1=value1")
+                                .setIosExecutionParams("key1=value1")
+                                .build()))
+                        .build();
+
+                Map<String, String> serverCallbackArgs = new HashMap<String, String>();
+                serverCallbackArgs.put("user_id", "${current_user_id}");
+                serverCallbackArgs.put("product_id", "${shared_product_id}");
+
+                KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
+                    @Override
+                    public void onFailure(ErrorResult errorResult) {
+                        Log.e("실수","오마갓");
+                        Log.e("실수2",errorResult.getErrorMessage().toString());
+                    }
+
+                    @Override
+                    public void onSuccess(KakaoLinkResponse result) {
+                        Log.e("성공","오마갓");
+                        result.getTemplateMsg().toString();
+                    }
+                });
+
+                return true;
             default :
                 return super.onOptionsItemSelected(item) ;
         }
