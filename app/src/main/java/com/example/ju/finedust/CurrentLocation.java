@@ -3,6 +3,7 @@ package com.example.ju.finedust;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -64,9 +65,13 @@ public class CurrentLocation {
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private OnCompleteListener<Location> mCompleteListener;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     public CurrentLocation(Context context) {
         this.mcontext = context;
+        sharedPreferences = mcontext.getSharedPreferences("CurrentLocationTM",Context.MODE_PRIVATE);
+
         //mlocationManager = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mcontext);
         mCompleteListener = new OnCompleteListener<Location>() {
@@ -98,8 +103,22 @@ public class CurrentLocation {
             return;
         }
 
-        mFusedLocationProviderClient.getLastLocation()
-                .addOnCompleteListener(mCompleteListener);
+        //gps 켜져있나 확인
+        LocationManager manager = (LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE);
+        if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            mFusedLocationProviderClient.getLastLocation()
+                    .addOnCompleteListener(mCompleteListener);
+        }else{
+            //gps 안켜져 있다면 마지막 장소 좌표값 넣기
+            String tmX = sharedPreferences.getString("tmX","");
+            String tmY = sharedPreferences.getString("tmY","");
+
+            mfindMoniteringStation = new FindMoniteringStation(mhandler);
+            mfindMoniteringStation.getUserLocalMoniteringStation(tmX,tmY);
+
+        }
+
+
     }
 
     //받아온 위도 경도 - > TM 좌표로 변환
@@ -134,6 +153,13 @@ public class CurrentLocation {
 
                 mfindMoniteringStation = new FindMoniteringStation(mhandler);
                 mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY);
+
+                //마지막 위치 쉐어드 저장
+                editor = sharedPreferences.edit();
+                editor.clear();
+                editor.putString("tmX",mTmX);
+                editor.putString("tmY",mTmY);
+                editor.apply();
 
                 Log.e("TM좌표", mTmX + "     " + mTmY);
             }
