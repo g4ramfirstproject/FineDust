@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //현재위치 대기정보 가져오기
         currentLocation = new CurrentLocation(this);
-        currentLocation.getCurrentLocation();
         currentLocation.tmLookup(mhandler);
     }
 
@@ -153,68 +152,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    private String dust10ValuetoText(int dustvalue){
-        if (dustvalue > 100){
-            return "매우나쁨";
-        }else if(dustvalue > 50){
-            return "나쁨";
-        }else if(dustvalue > 30){
-            return "보통";
-        }else {
-            return "좋음";
-        }
-    }
-
-    private String dust25ValuetoText(int dustvalue){
-        if (dustvalue > 50){
-            return "매우나쁨";
-        }else if(dustvalue > 35){
-            return "나쁨";
-        }else if(dustvalue > 16){
-            return "보통";
-        }else {
-            return "좋음";
-        }
-    }
-
-
-    private void setMainImageAndLevelText(String value10pm, String value25pm){
-        int value10= Integer.parseInt(value10pm);
-        int value25 = Integer.parseInt(value25pm);
-        String returnvalue10pm = dust10ValuetoText(value10);
-        String returnvalue25pm = dust25ValuetoText(value25);
-
-        locationDustLevelText.setText(returnvalue10pm);
-        locationFineDustLevelText.setText(returnvalue25pm);
-        if (returnvalue10pm.equals("매우나쁨") || returnvalue25pm.equals("매우나쁨")){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finddustImage.setImageDrawable(getResources().getDrawable(R.drawable.dustred, getApplicationContext().getTheme()));
-            }else{
-                finddustImage.setImageResource(R.drawable.dustred);
-            }
-        }
-        else if(returnvalue10pm.equals("나쁨") || returnvalue25pm.equals("나쁨")){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finddustImage.setImageDrawable(getResources().getDrawable(R.drawable.dustyellow, getApplicationContext().getTheme()));
-            }else{
-                finddustImage.setImageResource(R.drawable.dustyellow);
-            }
-        }
-        else if (returnvalue10pm.equals("보통") || returnvalue25pm.equals("보통")){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finddustImage.setImageDrawable(getResources().getDrawable(R.drawable.dustgreen, getApplicationContext().getTheme()));
-            }else{
-                finddustImage.setImageResource(R.drawable.dustgreen);
-            }
-        }
-        else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finddustImage.setImageDrawable(getResources().getDrawable(R.drawable.dustblue, getApplicationContext().getTheme()));
-            }else{
-                finddustImage.setImageResource(R.drawable.dustblue);
-            }
-        }
-    }
 
     private Handler mhandler = new Handler(new Handler.Callback() {
         @Override
@@ -229,14 +166,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 locationName.setText(mStationDustreturns.getStationName());
                 locationDustLevel.setText(dustvaluelist.getPm10Value());
                 locationFineDustLevel.setText(dustvaluelist.getPm25Value());
-                setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
+              //  setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
+
+                DustLevelConverter converter = new DustLevelConverter();
+                converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
+                locationDustLevelText.setText(converter.getReturn10pm());
+                locationFineDustLevelText.setText(converter.getReturn25pm());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    finddustImage.setImageDrawable(getResources().getDrawable(converter.getReturnImage(), getApplicationContext().getTheme()));
+                }else{
+                    finddustImage.setImageResource(converter.getReturnImage());
+                }
+
                 for(int i=0; i<22; i+=3)
                 {
                     StationDustreturns.list huijung = mStationDustreturns.getList().get(i);
                     String datatime = huijung.getDataTime().substring(11,13);
                     if(!huijung.getPm10Value().equals("-"))
                     {
-                        String pm10Value = dust10ValuetoText(Integer.parseInt(huijung.getPm10Value()));
+                        String pm10Value = converter.dust10ValuetoText(Integer.parseInt(huijung.getPm10Value()));
                         mAdapter.add(datatime, pm10Value);
                     }
 
@@ -285,8 +234,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     void searchApiInit(){
         ImageButton a = findViewById(R.id.places_autocomplete_search_button);
         a.setImageResource(R.color.colorGood);
+
         ImageButton b = findViewById(R.id.places_autocomplete_clear_button);
         b.setImageResource(R.color.colorGood);
+
         apiKeyGooglePlaces = getString(R.string.api_key_googlemap);
         // Initialize Places.
         Places.initialize(getApplicationContext(), apiKeyGooglePlaces);
@@ -296,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setHint("");
+
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
         // Set up a PlaceSelectionListener to handle the response.
