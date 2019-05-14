@@ -160,9 +160,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mAdapter.clear();
                 mStationDustreturns = (StationDustreturns) msg.obj;
                 StationDustreturns.list dustvaluelist = mStationDustreturns.getList().get(0);
-                if(dustvaluelist.getPm10Value().equals("-") || dustvaluelist.getPm25Value().equals("-")){
-                    dustvaluelist = mStationDustreturns.getList().get(1);
-                }
                 locationName.setText(mStationDustreturns.getStationName());
                 locationDustLevel.setText(dustvaluelist.getPm10Value());
                 locationFineDustLevel.setText(dustvaluelist.getPm25Value());

@@ -8,6 +8,9 @@ import com.example.ju.finedust.Item.StationDustreturns;
 import com.example.ju.finedust.Item.MoniteringStationreturns;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,6 +24,7 @@ public class FindMoniteringStation {
     private OkHttpClient stetho;
     private String mstationName = "";
     private StationDustreturns mStationDustreturns;
+    private MoniteringStationreturns moniteringStationreturns;
     private Handler mhandler;
 
     public FindMoniteringStation(Handler handler){
@@ -50,7 +54,7 @@ public class FindMoniteringStation {
         callBack.enqueue(new Callback<MoniteringStationreturns>() {
             @Override
             public void onResponse(Call<MoniteringStationreturns> call, Response<MoniteringStationreturns> response) {
-                MoniteringStationreturns moniteringStationreturns = response.body();
+                moniteringStationreturns = response.body();
                 mstationName = moniteringStationreturns.getList().get(0).getStationName();
 
                 //측정소 대기현황 요청 메서드
@@ -76,6 +80,10 @@ public class FindMoniteringStation {
                 //main 에서 쓸 대기정보객체 생성
                 mStationDustreturns = new StationDustreturns();
                 mStationDustreturns = response.body();
+                if (mStationDustreturns.getList().get(0).getPm10Value().equals("-")){
+                    getLocalFineDust(moniteringStationreturns.getList().get(1).getStationName());
+                    return;
+                }
                 mStationDustreturns.setStationName(mstationName);
                 Message msg = mhandler.obtainMessage();
                 msg.what = 0;
