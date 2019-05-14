@@ -3,6 +3,7 @@ package com.example.ju.finedust;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import com.example.ju.finedust.Item.StationDustreturns;
  */
 public class NewAppWidget extends AppWidgetProvider {
 
+    private static final String ACTION_REFRESH = "com.js.widgetexample.Refresh";
 
     static void updateAppWidget(final Context context, final AppWidgetManager appWidgetManager,
                                 final int appWidgetId) {
@@ -50,6 +52,7 @@ public class NewAppWidget extends AppWidgetProvider {
         currentLocation.tmLookup(mhandler);
 
         Intent intent = new Intent(context, MainActivity.class);
+        intent.setAction(ACTION_REFRESH);
         PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
         views.setOnClickPendingIntent(R.id.appwidget_View,pendingIntent);
 
@@ -74,6 +77,19 @@ public class NewAppWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName thisAppWidget = new ComponentName(context.getPackageName(), NewAppWidget.class.getName());
+        int[] appWidgets = appWidgetManager.getAppWidgetIds(thisAppWidget);
+        final String action = intent.getAction();
+
+        if(action.equals(ACTION_REFRESH)){
+            onUpdate(context,appWidgetManager,appWidgets);
+        }
+    }
 }
 
 
