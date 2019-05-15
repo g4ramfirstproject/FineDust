@@ -96,9 +96,9 @@ public class NationWideFineDustActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nation_wide_fine_dust);
+        ButterKnife.bind(this);
         arrrNationWideList = new ArrayList<>();
         arrCircleImageViewList = new ArrayList<>();
-        ButterKnife.bind(this);
         stetho = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();
