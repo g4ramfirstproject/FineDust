@@ -17,7 +17,7 @@ import com.example.ju.finedust.Item.StationDustreturns;
  */
 public class NewAppWidget extends AppWidgetProvider {
 
-    private static final String ACTION_REFRESH = "com.js.widgetexample.Refresh";
+    private static final String ACTION_REFRESH = "android.appwidget.action.APPWIDGET_UPDATE";
 
     static void updateAppWidget(final Context context, final AppWidgetManager appWidgetManager,
                                 final int appWidgetId) {
@@ -51,11 +51,18 @@ public class NewAppWidget extends AppWidgetProvider {
         CurrentLocation currentLocation = new CurrentLocation(context);
         currentLocation.tmLookup(mhandler);
 
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setAction(ACTION_REFRESH);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
-        views.setOnClickPendingIntent(R.id.appwidget_View,pendingIntent);
 
+        views.setImageViewResource(R.id.appwidget_refresh,R.drawable.ic_refresh_black_24dp);
+
+        //업데이트
+        Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        PendingIntent pendingIntent =  PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.appwidget_refresh,pendingIntent);
+
+        //어플 띄우기
+        Intent intentActivity = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntentActivity = PendingIntent.getActivity(context,0,intentActivity,0);
+        views.setOnClickPendingIntent(R.id.appwidget_View,pendingIntentActivity);
 
     }
 
@@ -86,8 +93,10 @@ public class NewAppWidget extends AppWidgetProvider {
         int[] appWidgets = appWidgetManager.getAppWidgetIds(thisAppWidget);
         final String action = intent.getAction();
 
-        if(action.equals(ACTION_REFRESH)){
-            onUpdate(context,appWidgetManager,appWidgets);
+        if(action.equals(AppWidgetManager.ACTION_APPWIDGET_UPDATE)){
+            if(appWidgets!=null && appWidgets.length>0)
+                this.onUpdate(context,AppWidgetManager.getInstance(context),appWidgets);
+
         }
     }
 }
