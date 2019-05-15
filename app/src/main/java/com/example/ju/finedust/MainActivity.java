@@ -478,12 +478,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         autocompleteFragment.setHint("");
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG,Place.Field.ADDRESS_COMPONENTS));
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                currentLocation.transcoord(place.getLatLng().longitude,place.getLatLng().latitude);
+                String address;
+                if(place.getAddressComponents().asList().get(0).getTypes().get(0).equals("premise")){
+                    address = place.getAddressComponents().asList().get(1).getShortName();
+                } else {
+                    address = place.getAddressComponents().asList().get(0).getShortName();
+                }
+                currentLocation.transcoord(place.getLatLng().longitude,place.getLatLng().latitude, address);
             }
             @Override
             public void onError(Status status) {

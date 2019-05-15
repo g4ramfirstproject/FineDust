@@ -44,6 +44,16 @@ public class FindMoniteringStation {
 
     //TM 좌표료 측정소 찾기 -> 바로 그 측정소 대기정보 메서드 실행
     public void getUserLocalMoniteringStation(String tmX, String tmY) {
+        getUserLocalMoniteringStation(tmX,tmY,null);
+    }
+
+    //측정소 대기정보 가져오기
+    public void getLocalFineDust(final String mstationName) {
+        getLocalFineDust(mstationName,null);
+    }
+
+    //TM 좌표료 측정소 찾기 -> 바로 그 측정소 대기정보 메서드 실행
+    public void getUserLocalMoniteringStation(String tmX, String tmY, final String searchedAddress) {
         //임시
 
         Call<MoniteringStationreturns> callBack = apiService.getMoniteringStation(tmX, tmY);
@@ -54,7 +64,11 @@ public class FindMoniteringStation {
                 mstationName = moniteringStationreturns.getList().get(0).getStationName();
 
                 //측정소 대기현황 요청 메서드
-                getLocalFineDust(mstationName);
+                if(searchedAddress != null){
+                    getLocalFineDust(mstationName,searchedAddress);
+                } else {
+                    getLocalFineDust(mstationName);
+                }
             }
 
             @Override
@@ -66,7 +80,7 @@ public class FindMoniteringStation {
     }
 
     //측정소 대기정보 가져오기
-    public void getLocalFineDust(final String mstationName) {
+    public void getLocalFineDust(final String mstationName, final String searchedAddress) {
         String dataTerm = "DAILY";
         float version = 1.3f;
         Call<StationDustreturns> callBack = apiService.getStationDust(mstationName, dataTerm, version);
@@ -79,6 +93,9 @@ public class FindMoniteringStation {
                 mStationDustreturns.setStationName(mstationName);
                 Message msg = mhandler.obtainMessage();
                 msg.what = 0;
+                if(searchedAddress != null){
+                    mStationDustreturns.setStationName(searchedAddress);
+                }
                 msg.obj = mStationDustreturns;
                 mhandler.sendMessage(msg);
             }

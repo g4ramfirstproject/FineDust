@@ -54,6 +54,9 @@ public class StationDustreturns {
         private String coValue;
         private String pm10Grade1h;
 
+        public void setStationName(String stationName) {
+            this.stationName = stationName;
+        }
 
         public String getPm10Value() {
             return pm10Value;
