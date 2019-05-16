@@ -123,6 +123,11 @@ public class CurrentLocation {
 
     //받아온 위도 경도 - > TM 좌표로 변환
     public void transcoord(double longitude, double latitude) {
+        transcoord(longitude,latitude,null);
+    }
+
+    //받아온 위도 경도 - > TM 좌표로 변환
+    public void transcoord(double longitude, double latitude, final String searchedAddress) {
 
         Stetho.initializeWithDefaults(mcontext);
 
@@ -135,7 +140,6 @@ public class CurrentLocation {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(stetho)
                 .build();
-
 
         apiservice = retrofit.create(Connection.class);
 
@@ -152,7 +156,11 @@ public class CurrentLocation {
                 mTmY = tm.getY();
 
                 mfindMoniteringStation = new FindMoniteringStation(mhandler);
-                mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY);
+                if(searchedAddress != null){
+                    mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY,searchedAddress);
+                } else {
+                    mfindMoniteringStation.getUserLocalMoniteringStation(mTmX,mTmY);
+                }
 
                 //마지막 위치 쉐어드 저장
                 editor = sharedPreferences.edit();
