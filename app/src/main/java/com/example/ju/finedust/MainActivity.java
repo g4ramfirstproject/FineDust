@@ -1,13 +1,28 @@
 package com.example.ju.finedust;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,15 +32,46 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.util.Log;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.PixelCopy;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.ju.finedust.Item.ItemHourlyForecast;
 
 import com.example.ju.finedust.Item.StationDustreturns;
+import com.kakao.kakaolink.v2.KakaoLinkResponse;
+import com.kakao.kakaolink.v2.KakaoLinkService;
+import com.kakao.message.template.ButtonObject;
+import com.kakao.message.template.ContentObject;
+import com.kakao.message.template.FeedTemplate;
+import com.kakao.message.template.LinkObject;
+import com.kakao.message.template.SocialObject;
+import com.kakao.network.ErrorResult;
+import com.kakao.network.callback.ResponseCallback;
+import com.kakao.network.storage.ImageDeleteResponse;
+import com.kakao.network.storage.ImageUploadResponse;
+import com.kakao.util.helper.log.Logger;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.security.MessageDigest;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -36,6 +82,8 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
@@ -53,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private LinearLayoutManager mLayoutManger;
     private ProgressDialog mprogressDialog;
+    private int MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE;
+
+    private String dust25StringValue;
 
     private String apiKeyGooglePlaces;
     private Context co_this;
@@ -82,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         localDustlevelSetup();
         getCurrentTime();
 
+
+
     }
 
     @Override
@@ -89,16 +142,190 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         searchApiInit();
     }
+    public Bitmap takeScreenshot() {
+        ScrollView scrollView = findViewById(R.id.scrollView_main);
+        Bitmap bitmap = Bitmap.createBitmap(scrollView.getChildAt(0).getWidth(), scrollView.getChildAt(0).getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap_back = Bitmap.createBitmap(scrollView.getChildAt(0).getHeight(), scrollView.getChildAt(0).getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas_back = new Canvas(bitmap_back);
+        Canvas canvas = new Canvas(bitmap);
+        Drawable bgDrawable = scrollView.getBackground();
+        if (bgDrawable != null)
+            bgDrawable.draw(canvas);
+        else
+            canvas.drawColor(Color.WHITE);
+        scrollView.draw(canvas);
+        int centreX = (bitmap_back.getWidth() - bitmap.getWidth()) / 2;
+        int centreY = (canvas.getHeight() - bitmap.getHeight()) / 2;
+        canvas_back.drawBitmap(bitmap, centreX, centreY, null);
+        return bitmap_back;
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public File saveBitmap(Bitmap bitmap) {
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+        Boolean te = isExternalStorageWritable();
+        File imagePath = new File(Environment.getExternalStorageDirectory() + "/screenshot.png");
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(imagePath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+            return imagePath;
+        } catch (FileNotFoundException e) {
+            Log.e("GREC", e.getMessage(), e);
+            return imagePath;
+        } catch (IOException e) {
+            Log.e("GREC", e.getMessage(), e);
+            return imagePath;
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_search:
                 return true;
-                      default :
-                return super.onOptionsItemSelected(item) ;
+            case R.id.menu_share:
+                Bitmap bitmap = takeScreenshot();
+                final File tempCaptureFile = saveBitmap(bitmap);
+                KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
+                    @Override
+                    public void onFailure(ErrorResult errorResult) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(ImageUploadResponse result) {
+                        Log.i("강래민","돌긴도나");
+                        sendLink(result, tempCaptureFile);
+                    }
+                });
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
+
+    public void deleteImage(String imageUrl) {
+        KakaoLinkService.getInstance().deleteImageWithUrl(this, imageUrl, new ResponseCallback<ImageDeleteResponse>() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                Logger.e(errorResult.toString());
+            }
+
+            @Override
+            public void onSuccess(ImageDeleteResponse result) {
+                Log.i("ImageDel", result.toString());
+            }
+        });
+    }
+
+    public void sendLink(ImageUploadResponse result, final File tempCaptureFile) {
+        Log.i("강래민","돌긴도나2");
+
+        String stringValue = null;
+        switch (dust25StringValue){
+            case "매우나쁨":
+                stringValue = "대기중에 미세먼지가 매우 많으므로 외출을 삼가해 주세요";
+                break;
+            case "나쁨":
+                stringValue = "미세먼지가 많습니다. 외출하실때 마스크를 꼭 챙기세요.";
+                break;
+            case "보통":
+                stringValue = "무난무난한 날이에요.";
+                break;
+            case "좋음":
+                stringValue = "쾌적한 날이에요.";
+                break;
+        }
+
+
+        FeedTemplate params = FeedTemplate
+                .newBuilder(ContentObject.newBuilder("미세먼지 : "+dust25StringValue,
+                        result.getOriginal().getUrl(),
+                        LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
+                                .setMobileWebUrl("https://developers.kakao.com").build())
+                        .setDescrption(stringValue)
+                        .build())
+                .addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
+                        .setWebUrl("'https://developers.kakao.com")
+                        .setMobileWebUrl("'https://developers.kakao.com")
+                        .setAndroidExecutionParams("key1=value1")
+                        .setIosExecutionParams("key1=value1")
+                        .build()))
+                .build();
+        Map<String, String> serverCallbackArgs = new HashMap<String, String>();
+        serverCallbackArgs.put("user_id", "${current_user_id}");
+        serverCallbackArgs.put("product_id", "${shared_product_id}");
+        KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                Log.i("강래민","돌긴도나3");
+
+                tempCaptureFile.delete();
+                Log.e("실수","오마갓");
+                Log.e("실수2",errorResult.getErrorMessage().toString());
+            }
+
+            @Override
+            public void onSuccess(KakaoLinkResponse result) {
+                Log.i("강래민","돌긴도나4");
+
+                tempCaptureFile.delete();
+                Log.e("성공","오마갓");
+                result.getTemplateMsg().toString();
+            }
+        });
+    }
+    private void getAppKeyHash() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String something = new String(Base64.encode(md.digest(), 0));
+                Log.e("Hash key", something);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            Log.e("name not found", e.toString());
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);// main_menu 메뉴를 toolbar 메뉴 버튼으로 설정
@@ -176,6 +403,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finddustImage.setImageResource(converter.getReturnImage());
                 }
 
+                dust25StringValue = converter.getReturn25pm();
+                converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
                 for(int i=0; i<22; i+=3)
                 {
                     StationDustreturns.list huijung = mStationDustreturns.getList().get(i);
