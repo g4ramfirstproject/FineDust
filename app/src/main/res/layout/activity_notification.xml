@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".NotificationActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <Switch
+            android:id="@+id/AlarmSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="알림 끄기/켜기"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="알림을 키시면 설정화면이 나옵니다" />
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:id="@+id/SettingLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/TimePicker"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:text="시간을 설정해주세요"
+                android:textColor="#ffffff" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
