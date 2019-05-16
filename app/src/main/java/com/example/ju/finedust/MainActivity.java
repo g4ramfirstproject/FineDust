@@ -387,9 +387,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mAdapter.clear();
                 mStationDustreturns = (StationDustreturns) msg.obj;
                 StationDustreturns.list dustvaluelist = mStationDustreturns.getList().get(0);
-                if(dustvaluelist.getPm10Value().equals("-") || dustvaluelist.getPm25Value().equals("-")){
-                    dustvaluelist = mStationDustreturns.getList().get(1);
-                }
                 locationName.setText(mStationDustreturns.getStationName());
                 locationDustLevel.setText(dustvaluelist.getPm10Value());
                 locationFineDustLevel.setText(dustvaluelist.getPm25Value());
@@ -438,7 +435,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(MainActivity.this, NationWideFineDustActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_setting) {
-
+            Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+            startActivity(intent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

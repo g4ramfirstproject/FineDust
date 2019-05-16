@@ -32,9 +32,18 @@
             android:layout_width="wrap_content"
             android:layout_height="25dp"
             android:layout_gravity="center"
-            android:layout_marginStart="2dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="2dp"
             android:text="서대문구"
             android:textSize="16sp" />
+
+
+        <ImageView
+            android:id="@+id/appwidget_refresh"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            app:srcCompat="@drawable/ic_refresh_black_24dp"
+            tools:ignore="VectorDrawableCompat" />
 
         <TextView
             android:layout_width="match_parent"
