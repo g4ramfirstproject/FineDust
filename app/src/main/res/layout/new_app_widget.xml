@@ -30,7 +30,7 @@
         <TextView
             android:id="@+id/appwidget_location"
             android:layout_width="wrap_content"
-            android:layout_height="25dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="2dp"
@@ -39,9 +39,10 @@
 
 
         <ImageView
+            android:paddingTop="2dp"
             android:id="@+id/appwidget_refresh"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             app:srcCompat="@drawable/ic_refresh_black_24dp"
             tools:ignore="VectorDrawableCompat" />
 
@@ -65,8 +66,8 @@
 
         <ImageView
             android:id="@+id/appwidget_dustlevelimage"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_marginEnd="8dp"
             android:padding="2dp"
             app:srcCompat="@drawable/logo2" />
@@ -74,7 +75,7 @@
         <TextView
             android:id="@+id/appwidget_dustleveltext"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="28dp"
             android:gravity="center"
             android:text="매우나쁨"
             android:textColor="@color/colorPrimary"
@@ -101,7 +102,7 @@
         <TextView
             android:id="@+id/textView17"
             android:layout_width="65dp"
-            android:layout_height="wrap_content"
+            android:layout_height="19dp"
             android:layout_marginEnd="16dp"
             android:textAlignment="center"
             android:text="미세먼지" />
@@ -109,7 +110,7 @@
         <TextView
             android:id="@+id/textView18"
             android:layout_width="65dp"
-            android:layout_height="wrap_content"
+            android:layout_height="19dp"
             android:textAlignment="center"
             android:text="초미세먼지" />
 
@@ -133,9 +134,9 @@
         <TextView
             android:id="@+id/appwidget_dustleveltextbelow"
             android:layout_width="65dp"
-            android:layout_height="wrap_content"
+            android:layout_height="19dp"
             android:layout_marginEnd="16dp"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textAlignment="center"
             android:text="100" />
 
@@ -143,8 +144,8 @@
         <TextView
             android:id="@+id/appwidget_finedustleveltextbelow"
             android:layout_width="65dp"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:layout_height="19dp"
+            android:textSize="15sp"
             android:textAlignment="center"
             android:text="56" />
 

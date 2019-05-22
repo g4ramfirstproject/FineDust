@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+                Log.i("ㅁㄴㅇㄹ",errorResult.toString());
 
             }
 
@@ -405,6 +406,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         currentLocation.tmLookup(mhandler);
     }
 
+
     private void viewSetup() {
         locationName = findViewById(R.id.locationName_tv);
         currentTime = findViewById(R.id.MainTime_tv);
@@ -450,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     finddustImage.setImageResource(converter.getReturnImage());
                 }
 
-                dust25StringValue = converter.getReturn25pm();
+                dust25StringValue = converter.getReturnAvgDustLevel();
                 converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
                 for(int i=0; i<22; i+=3)
                 {

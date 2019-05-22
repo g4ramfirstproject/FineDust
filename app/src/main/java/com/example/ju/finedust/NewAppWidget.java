@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.RemoteViews;
+import android.widget.Switch;
 
 import com.example.ju.finedust.Item.StationDustreturns;
 
@@ -39,7 +40,21 @@ public class NewAppWidget extends AppWidgetProvider {
                     views.setImageViewResource(R.id.appwidget_dustlevelimage, converter.getReturnImage());
                     views.setTextViewText(R.id.appwidget_dustleveltextbelow,dustValueList.getPm10Value());
                     views.setTextViewText(R.id.appwidget_finedustleveltextbelow,dustValueList.getPm25Value());
-
+                    String AvgDustLevel = converter.getReturnAvgDustLevel();
+                    switch (AvgDustLevel){
+                        case "매우나쁨":
+                            views.setTextColor(R.id.appwidget_dustleveltext,context.getColor(R.color.colorVeryBad));
+                            break;
+                        case "나쁨":
+                            views.setTextColor(R.id.appwidget_dustleveltext,context.getColor(R.color.colorBad));
+                            break;
+                        case "보통":
+                            views.setTextColor(R.id.appwidget_dustleveltext,context.getColor(R.color.colorNormal));
+                            break;
+                        case "좋음":
+                            views.setTextColor(R.id.appwidget_dustleveltext,context.getColor(R.color.colorGood));
+                            break;
+                    }
 
                     // Instruct the widget manager to update the widget
                     appWidgetManager.updateAppWidget(appWidgetId, views);
