@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
-
+                Log.e("윤희중","실패메세지");
             }
 
             @Override
@@ -449,8 +449,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }else{
                     finddustImage.setImageResource(converter.getReturnImage());
                 }
-
-                dust25StringValue = converter.getReturn25pm();
+                dust25StringValue = converter.getReturnAvgDustLevel();
+                //dust25StringValue = converter.getReturn25pm();
                 converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
                 for(int i=0; i<22; i+=3)
                 {
