@@ -87,8 +87,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
-    private PermissionRequest permissionRequest;
-    private CurrentLocation mlocation;
 
     private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText;
     private RecyclerView dailyRecyclerView,timeRecyclerView;
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_menu);
         co_this = this;
 
-        startProgressbar();
+        //startProgressbar();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -397,13 +395,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void localDustlevelSetup() {
-        //위치정보 퍼미션
-        permissionRequest = new PermissionRequest(this);
-        permissionRequest.locationAccess();
-
-        //현재위치 대기정보 가져오기
         currentLocation = new CurrentLocation(this);
         currentLocation.tmLookup(mhandler);
+
     }
 
 
@@ -467,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
 
-                mprogressDialog.dismiss();
+                //mprogressDialog.dismiss();
             }
             return false;
         }
