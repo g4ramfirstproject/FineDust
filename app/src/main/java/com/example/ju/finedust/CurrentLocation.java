@@ -24,7 +24,10 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -97,28 +100,55 @@ public class CurrentLocation {
     }
     //현재 위치에 따른 위도, 경도 받아오기
     public void getCurrentLocation(){
-
         if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(mcontext, "위치 권한을 허용 해주세요.", Toast.LENGTH_SHORT).show();
-            return;
+            //permissionRequest.locationAccess();
+            TedPermission.with(mcontext)
+                    .setPermissionListener(new PermissionListener() {
+                        @Override
+                        public void onPermissionGranted() {
+                            //gps 켜져있나 확인
+                            LocationManager manager = (LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE);
+                            if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&
+                                    ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                                mFusedLocationProviderClient.getLastLocation()
+                                        .addOnCompleteListener(mCompleteListener);
+                            }else{
+                                //gps 안켜져 있다면 마지막 장소 좌표값 넣기
+                                String tmX = sharedPreferences.getString("tmX","");
+                                String tmY = sharedPreferences.getString("tmY","");
+
+                                mfindMoniteringStation = new FindMoniteringStation(mhandler);
+                                mfindMoniteringStation.getUserLocalMoniteringStation(tmX,tmY);
+
+                            }
+                        }
+
+                        @Override
+                        public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+
+                        }
+                    })
+                    .setRationaleMessage("이 앱을 사용하려면 위치 권한이 필요합니다.")
+                    .setDeniedMessage("[설정] > [권한] 에서 권한을 허용할 수 있습니다.")
+                    .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                    .check();
         }
+        else{
+            //gps 켜져있나 확인
+            LocationManager manager = (LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE);
+            if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&
+                    ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mFusedLocationProviderClient.getLastLocation()
+                        .addOnCompleteListener(mCompleteListener);
+            }else{
+                //gps 안켜져 있다면 마지막 장소 좌표값 넣기
+                String tmX = sharedPreferences.getString("tmX","");
+                String tmY = sharedPreferences.getString("tmY","");
 
-        //gps 켜져있나 확인
-        LocationManager manager = (LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE);
-        if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mFusedLocationProviderClient.getLastLocation()
-                    .addOnCompleteListener(mCompleteListener);
-        }else{
-            //gps 안켜져 있다면 마지막 장소 좌표값 넣기
-            String tmX = sharedPreferences.getString("tmX","");
-            String tmY = sharedPreferences.getString("tmY","");
-
-            mfindMoniteringStation = new FindMoniteringStation(mhandler);
-            mfindMoniteringStation.getUserLocalMoniteringStation(tmX,tmY);
-
+                mfindMoniteringStation = new FindMoniteringStation(mhandler);
+                mfindMoniteringStation.getUserLocalMoniteringStation(tmX,tmY);
+            }
         }
-
-
     }
 
     //받아온 위도 경도 - > TM 좌표로 변환
