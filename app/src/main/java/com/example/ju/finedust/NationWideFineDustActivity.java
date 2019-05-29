@@ -1,6 +1,7 @@
 package com.example.ju.finedust;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
@@ -91,7 +92,7 @@ public class NationWideFineDustActivity extends AppCompatActivity {
     TextView busan_tv;
     @BindView(R.id.jeju_tv)
     TextView jeju_tv;
-
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,69 +119,76 @@ public class NationWideFineDustActivity extends AppCompatActivity {
         call.enqueue(new Callback<NationWideFineDustData>() {
             @Override
             public void onResponse(Call<NationWideFineDustData> call, Response<NationWideFineDustData> response) {
+                int i = 0;
                 NationWideFineDustData getNationWideFineDustData = response.body();
-                //최신데이터
-                String  gangwon =getNationWideFineDustData.getList().get(0).getGangwon();
-                String  gwangju = getNationWideFineDustData.getList().get(0).getGwangju();
-                String  ulsan = getNationWideFineDustData.getList().get(0).getUlsan();
-                String  gyeongnam = getNationWideFineDustData.getList().get(0).getGyeongnam();
-                String  chungnam = getNationWideFineDustData.getList().get(0).getChungnam();
-                String  daejeon = getNationWideFineDustData.getList().get(0).getDaejeon();
-                String  daegu= getNationWideFineDustData.getList().get(0).getDaegu();
-                String  gyeonggi = getNationWideFineDustData.getList().get(0).getGyeonggi();
-                String  jeonbuk  = getNationWideFineDustData.getList().get(0).getJeonbuk();
-                String  chungbuk = getNationWideFineDustData.getList().get(0).getChungbuk();
-                String  seoul = getNationWideFineDustData.getList().get(0).getSeoul();
-                String  dataTime =  getNationWideFineDustData.getList().get(0).getDataTime();
-                String  busan = getNationWideFineDustData.getList().get(0).getBusan();
-                String  gyeongbuk = getNationWideFineDustData.getList().get(0).getGyeongbuk();
-                String  jeju = getNationWideFineDustData.getList().get(0).getJeju();
-                String  jeonnam = getNationWideFineDustData.getList().get(0).getJeonnam();
-                //측정시간settext
-                measuretime_tv.setText("측정시간: "+ dataTime);
-                //각지역마다 측정값 SETTEXT하기
-                gyeongggi_tv.setText(gyeonggi);
-                gangwon_tv.setText(gangwon);
-                seoult_tv.setText(seoul);
-                chungnam_tv.setText(chungnam);
-                chungbuk_tv.setText(chungbuk);
-                gyeongbuk_tv.setText(gyeongbuk);
-                daejeon_tv.setText(daejeon);
-                daegu_tv.setText(daegu);
-                jeonbuk_tv.setText(jeonbuk);
-                ulsan_tv.setText(ulsan);
-                gwangju_tv.setText(gwangju);
-                jeonnam_tv.setText(jeonnam);
-                gyeongnam_tv.setText(gyeongnam);
-                busan_tv.setText(busan);
-                jeju_tv.setText(jeju);
-                //측정값 arraylist에 담기
-                arrrNationWideList.add(Integer.parseInt(busan));
-                arrrNationWideList.add(Integer.parseInt(gyeonggi));
-                arrrNationWideList.add(Integer.parseInt(gangwon));
-                arrrNationWideList.add(Integer.parseInt(gwangju));
-                arrrNationWideList.add(Integer.parseInt(gyeongnam));
-                arrrNationWideList.add(Integer.parseInt(gyeongbuk));
-                arrrNationWideList.add(Integer.parseInt(chungnam));
-                arrrNationWideList.add(Integer.parseInt(chungbuk));
-                arrrNationWideList.add(Integer.parseInt(daejeon));
-                arrrNationWideList.add(Integer.parseInt(daegu));
-                arrrNationWideList.add(Integer.parseInt(jeonbuk));
-                arrrNationWideList.add(Integer.parseInt(jeonnam));
-                arrrNationWideList.add(Integer.parseInt(jeju));
-                arrrNationWideList.add(Integer.parseInt(ulsan));
-                arrrNationWideList.add(Integer.parseInt(seoul));
-                //측정값WHO기준에 따라 분리하기
-                sortCurrentNationWideFineDust();
-                arrrNationWideList.clear();
+
+                if (getNationWideFineDustData.getList().get(i).getGangwon() == "-") {
+                    Toast.makeText(getApplicationContext(), "데이터를 받아올 수 없습니다. 다음에 다시 시도해주세요", Toast.LENGTH_SHORT).show();
+                } else {
+                    //최신데이터
+                    String gangwon = getNationWideFineDustData.getList().get(i).getGangwon();
+                    String gwangju = getNationWideFineDustData.getList().get(i).getGwangju();
+                    String ulsan = getNationWideFineDustData.getList().get(i).getUlsan();
+                    String gyeongnam = getNationWideFineDustData.getList().get(i).getGyeongnam();
+                    String chungnam = getNationWideFineDustData.getList().get(i).getChungnam();
+                    String daejeon = getNationWideFineDustData.getList().get(i).getDaejeon();
+                    String daegu = getNationWideFineDustData.getList().get(i).getDaegu();
+                    String gyeonggi = getNationWideFineDustData.getList().get(i).getGyeonggi();
+                    String jeonbuk = getNationWideFineDustData.getList().get(i).getJeonbuk();
+                    String chungbuk = getNationWideFineDustData.getList().get(i).getChungbuk();
+                    String seoul = getNationWideFineDustData.getList().get(i).getSeoul();
+                    String dataTime = getNationWideFineDustData.getList().get(i).getDataTime();
+                    String busan = getNationWideFineDustData.getList().get(i).getBusan();
+                    String gyeongbuk = getNationWideFineDustData.getList().get(i).getGyeongbuk();
+                    String jeju = getNationWideFineDustData.getList().get(i).getJeju();
+                    String jeonnam = getNationWideFineDustData.getList().get(i).getJeonnam();
+                    //측정시간settext
+                    measuretime_tv.setText("측정시간: " + dataTime);
+                    //각지역마다 측정값 SETTEXT하기
+                    gyeongggi_tv.setText(gyeonggi);
+                    gangwon_tv.setText(gangwon);
+                    seoult_tv.setText(seoul);
+                    chungnam_tv.setText(chungnam);
+                    chungbuk_tv.setText(chungbuk);
+                    gyeongbuk_tv.setText(gyeongbuk);
+                    daejeon_tv.setText(daejeon);
+                    daegu_tv.setText(daegu);
+                    jeonbuk_tv.setText(jeonbuk);
+                    ulsan_tv.setText(ulsan);
+                    gwangju_tv.setText(gwangju);
+                    jeonnam_tv.setText(jeonnam);
+                    gyeongnam_tv.setText(gyeongnam);
+                    busan_tv.setText(busan);
+                    jeju_tv.setText(jeju);
+                    //측정값 arraylist에 담기
+                    arrrNationWideList.add(Integer.parseInt(busan));
+                    arrrNationWideList.add(Integer.parseInt(gyeonggi));
+                    arrrNationWideList.add(Integer.parseInt(gangwon));
+                    arrrNationWideList.add(Integer.parseInt(gwangju));
+                    arrrNationWideList.add(Integer.parseInt(gyeongnam));
+                    arrrNationWideList.add(Integer.parseInt(gyeongbuk));
+                    arrrNationWideList.add(Integer.parseInt(chungnam));
+                    arrrNationWideList.add(Integer.parseInt(chungbuk));
+                    arrrNationWideList.add(Integer.parseInt(daejeon));
+                    arrrNationWideList.add(Integer.parseInt(daegu));
+                    arrrNationWideList.add(Integer.parseInt(jeonbuk));
+                    arrrNationWideList.add(Integer.parseInt(jeonnam));
+                    arrrNationWideList.add(Integer.parseInt(jeju));
+                    arrrNationWideList.add(Integer.parseInt(ulsan));
+                    arrrNationWideList.add(Integer.parseInt(seoul));
+                    //측정값WHO기준에 따라 분리하기
+                    sortCurrentNationWideFineDust();
+                    arrrNationWideList.clear();
+                }
             }
+
 
             @Override
             public void onFailure(Call<NationWideFineDustData> call, Throwable t) {
                 Toast.makeText(NationWideFineDustActivity.this, "실패", Toast.LENGTH_SHORT).show();
             }
-        });
-    }
+    });
+}
 
     //레트로핏초기화및 apiconfig 인터페이스 초기화
     private void initializeretrofit()
