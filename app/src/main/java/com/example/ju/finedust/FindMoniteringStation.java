@@ -27,7 +27,7 @@ public class FindMoniteringStation {
     private MoniteringStationreturns moniteringStationreturns;
     private Handler mhandler;
 
-    public FindMoniteringStation(Handler handler){
+    public FindMoniteringStation(Handler handler) {
         this.mhandler = handler;
         setUp();
     }
@@ -48,12 +48,12 @@ public class FindMoniteringStation {
 
     //TM 좌표료 측정소 찾기 -> 바로 그 측정소 대기정보 메서드 실행
     public void getUserLocalMoniteringStation(String tmX, String tmY) {
-        getUserLocalMoniteringStation(tmX,tmY,null);
+        getUserLocalMoniteringStation(tmX, tmY, null);
     }
 
     //측정소 대기정보 가져오기
     public void getLocalFineDust(final String mstationName) {
-        getLocalFineDust(mstationName,null);
+        getLocalFineDust(mstationName, null);
     }
 
     //TM 좌표료 측정소 찾기 -> 바로 그 측정소 대기정보 메서드 실행
@@ -65,11 +65,19 @@ public class FindMoniteringStation {
             @Override
             public void onResponse(Call<MoniteringStationreturns> call, Response<MoniteringStationreturns> response) {
                 moniteringStationreturns = response.body();
-                mstationName = moniteringStationreturns.getList().get(0).getStationName();
 
+
+                if (moniteringStationreturns.getList()== null) {
+                    Message msg = mhandler.obtainMessage();
+                    msg.what = 1;
+                    mhandler.sendMessage(msg);
+                    return;
+                }
+
+                mstationName = moniteringStationreturns.getList().get(0).getStationName();
                 //측정소 대기현황 요청 메서드
-                if(searchedAddress != null){
-                    getLocalFineDust(mstationName,searchedAddress);
+                if (searchedAddress != null) {
+                    getLocalFineDust(mstationName, searchedAddress);
                 } else {
                     getLocalFineDust(mstationName);
                 }
@@ -94,14 +102,14 @@ public class FindMoniteringStation {
                 //main 에서 쓸 대기정보객체 생성
                 mStationDustreturns = new StationDustreturns();
                 mStationDustreturns = response.body();
-                if (mStationDustreturns.getList().get(0).getPm10Value().equals("-")){
+                if (mStationDustreturns.getList().get(0).getPm10Value().equals("-")) {
                     getLocalFineDust(moniteringStationreturns.getList().get(1).getStationName());
                     return;
                 }
                 mStationDustreturns.setStationName(mstationName);
                 Message msg = mhandler.obtainMessage();
                 msg.what = 0;
-                if(searchedAddress != null){
+                if (searchedAddress != null) {
                     mStationDustreturns.setStationName(searchedAddress);
                 }
                 msg.obj = mStationDustreturns;
