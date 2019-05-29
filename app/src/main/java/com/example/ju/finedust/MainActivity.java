@@ -88,7 +88,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
 
-    private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText;
+    private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText, nodataTextView;
     private RecyclerView dailyRecyclerView,timeRecyclerView;
     private ImageView finddustImage;
     private AdapterHourlyForecast mAdapter;
@@ -409,6 +409,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         locationFineDustLevel = findViewById(R.id.MainFineDustLevel_tv);
         locationFineDustLevelText = findViewById(R.id.MainFineDustLevelText_tv);
         finddustImage = findViewById(R.id.MainFineDustImage);
+        nodataTextView = findViewById(R.id.tv_mainnodata);
+        nodataTextView.setVisibility(View.GONE);
         //시간별 리사이클러뷰
         timeRecyclerView = findViewById(R.id.MainrecyclerView);
         mLayoutManger = new LinearLayoutManager(this);
@@ -439,6 +441,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
                 locationDustLevelText.setText(converter.getReturn10pm());
                 locationFineDustLevelText.setText(converter.getReturn25pm());
+                nodataTextView.setVisibility(View.GONE);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     finddustImage.setImageDrawable(getResources().getDrawable(converter.getReturnImage(), getApplicationContext().getTheme()));
@@ -462,6 +465,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 //mprogressDialog.dismiss();
+            }
+            else if(msg.what ==1){
+                nodataTextView.setVisibility(View.VISIBLE);
             }
             return false;
         }
