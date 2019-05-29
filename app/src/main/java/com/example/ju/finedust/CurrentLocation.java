@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -53,6 +54,9 @@ public class CurrentLocation {
     //TM Y
     private String mTmY;
 
+    String tmX;
+    String tmY;
+
     public void setMlatitude(double mlatitude) {
         this.mlatitude = mlatitude;
     }
@@ -73,14 +77,15 @@ public class CurrentLocation {
 
     public CurrentLocation(Context context) {
         this.mcontext = context;
-        sharedPreferences = mcontext.getSharedPreferences("CurrentLocationTM",Context.MODE_PRIVATE);
+        sharedPreferences = mcontext.getSharedPreferences("CurrentLocationTM", Context.MODE_PRIVATE);
+
 
         //mlocationManager = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mcontext);
         mCompleteListener = new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful() && task.getResult() != null){
+                if (task.isSuccessful() && task.getResult() != null) {
                     Location mCurrentLocation = task.getResult();
 //                    Toast.makeText(mcontext, "lat : " + mCurrentLocation.getLatitude()
 //                            + "lng" +mCurrentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
@@ -91,65 +96,45 @@ public class CurrentLocation {
                     double longitude = mCurrentLocation.getLongitude();
 
                     transcoord(longitude, latitude);
-                }
-                else{
+                } else {
 
                 }
             }
         };
     }
+
     //현재 위치에 따른 위도, 경도 받아오기
-    public void getCurrentLocation(){
-        if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //permissionRequest.locationAccess();
-            TedPermission.with(mcontext)
-                    .setPermissionListener(new PermissionListener() {
-                        @Override
-                        public void onPermissionGranted() {
-                            //gps 켜져있나 확인
-                            LocationManager manager = (LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE);
-                            if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&
-                                    ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                mFusedLocationProviderClient.getLastLocation()
-                                        .addOnCompleteListener(mCompleteListener);
-                            }else{
-                                //gps 안켜져 있다면 마지막 장소 좌표값 넣기
-                                String tmX = sharedPreferences.getString("tmX","");
-                                String tmY = sharedPreferences.getString("tmY","");
+    public void getCurrentLocation() {
 
-                                mfindMoniteringStation = new FindMoniteringStation(mhandler);
-                                mfindMoniteringStation.getUserLocalMoniteringStation(tmX,tmY);
+        tmX = sharedPreferences.getString("tmX", "");
+        tmY = sharedPreferences.getString("tmY", "");
 
-                            }
-                        }
-
-                        @Override
-                        public void onPermissionDenied(ArrayList<String> deniedPermissions) {
-
-                        }
-                    })
-                    .setRationaleMessage("이 앱을 사용하려면 위치 권한이 필요합니다.")
-                    .setDeniedMessage("[설정] > [권한] 에서 권한을 허용할 수 있습니다.")
-                    .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-                    .check();
+        //gps 켜져있나 확인
+        LocationManager manager = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
+        //gps 켜져있을때
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&
+                ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mFusedLocationProviderClient.getLastLocation()
+                    .addOnCompleteListener(mCompleteListener);
         }
-        else{
-            //gps 켜져있나 확인
-            LocationManager manager = (LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE);
-            if(manager.isProviderEnabled(LocationManager.GPS_PROVIDER) &&
-                    ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mFusedLocationProviderClient.getLastLocation()
-                        .addOnCompleteListener(mCompleteListener);
-            }else{
+        //gps 켜져있지 않을때
+        else if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if(tmX.equals("")){
+                Toast.makeText(mcontext, "GPS를 켜주세요", Toast.LENGTH_SHORT).show();
+                Message msg = mhandler.obtainMessage();
+                msg.what = 1;
+                mhandler.sendMessage(msg);
+            }
+            else{
                 //gps 안켜져 있다면 마지막 장소 좌표값 넣기
-                String tmX = sharedPreferences.getString("tmX","");
-                String tmY = sharedPreferences.getString("tmY","");
-
+                Toast.makeText(mcontext, "GPS가 꺼져있어서 가장 최근 위치 데이터를 불러옵니다.", Toast.LENGTH_SHORT).show();
                 mfindMoniteringStation = new FindMoniteringStation(mhandler);
-                mfindMoniteringStation.getUserLocalMoniteringStation(tmX,tmY);
+                mfindMoniteringStation.getUserLocalMoniteringStation(tmX, tmY);
+
             }
         }
     }
+
 
     //받아온 위도 경도 - > TM 좌표로 변환
     public void transcoord(double longitude, double latitude) {

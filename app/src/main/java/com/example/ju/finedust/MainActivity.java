@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.content.Context;
@@ -20,6 +21,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.content.Intent;
+import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -53,6 +56,8 @@ import android.widget.Toast;
 import com.example.ju.finedust.Item.ItemHourlyForecast;
 
 import com.example.ju.finedust.Item.StationDustreturns;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.kakao.kakaolink.v2.KakaoLinkResponse;
 import com.kakao.kakaolink.v2.KakaoLinkService;
 import com.kakao.message.template.ButtonObject;
@@ -72,6 +77,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
+
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -80,6 +86,7 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -89,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
 
     private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText, nodataTextView;
-    private RecyclerView dailyRecyclerView,timeRecyclerView;
+    private RecyclerView dailyRecyclerView, timeRecyclerView;
     private ImageView finddustImage;
     private AdapterHourlyForecast mAdapter;
     private SwipeRefreshLayout mainRefreshLayout;
@@ -105,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String apiKeyGooglePlaces;
     private Context co_this;
+    private int sharecheck = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,10 +136,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        viewSetup();
-        localDustlevelSetup();
-        getCurrentTime();
+        currentLocation = new CurrentLocation(this);
 
+        viewSetup();
 
 
     }
@@ -139,7 +147,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         searchApiInit();
+        if (sharecheck == 0) {
+            localDustlevelSetup();
+            getCurrentTime();
+        } else {
+            if (sharecheck > 1) {
+                sharecheck = 0;
+            } else if (sharecheck > 0) {
+                sharecheck += 1;
+            }
+        }
+        //currentLocation.tmLookup(mhandler);
     }
+
     public Bitmap takeScreenshot() {
         ScrollView scrollView = findViewById(R.id.scrollView_main);
         Bitmap bitmap = Bitmap.createBitmap(scrollView.getChildAt(0).getWidth(), scrollView.getChildAt(0).getHeight(), Bitmap.Config.ARGB_8888);
@@ -166,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    public void checkPermissionWriteExternalStorage(){
+    public void checkPermissionWriteExternalStorage() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -182,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -211,7 +232,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // permissions this app might request
         }
     }
-    public void checkPermissionReadExternalStorage(){
+
+    public void checkPermissionReadExternalStorage() {
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -228,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     }
+
     public File saveBitmap(Bitmap bitmap) {
         File imagePath = new File(Environment.getExternalStorageDirectory() + "/screenshot.png");
         FileOutputStream fos;
@@ -245,23 +268,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return imagePath;
         }
     }
-    public void sharePic(){
+
+    public void sharePic() {
+        sharecheck += 1;
         Bitmap bitmap = takeScreenshot();
         final File tempCaptureFile = saveBitmap(bitmap);
         KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
-                Log.i("ㅁㄴㅇㄹ",errorResult.toString());
+                Log.i("ㅁㄴㅇㄹ", errorResult.toString());
 
             }
 
             @Override
             public void onSuccess(ImageUploadResponse result) {
-                Log.i("강래민","돌긴도나");
+                Log.i("강래민", "돌긴도나");
                 sendLink(result, tempCaptureFile);
+
             }
         });
+
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -270,13 +298,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.menu_share:
                 int permissionCheckWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 int permissionCheckRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-                if(permissionCheckWrite == PackageManager.PERMISSION_DENIED){
+                if (permissionCheckWrite == PackageManager.PERMISSION_DENIED) {
                     checkPermissionWriteExternalStorage();
                 }
-                if(permissionCheckRead == PackageManager.PERMISSION_DENIED){
+                if (permissionCheckRead == PackageManager.PERMISSION_DENIED) {
                     checkPermissionReadExternalStorage();
                 }
-                if(permissionCheckWrite == PackageManager.PERMISSION_GRANTED && permissionCheckRead == PackageManager.PERMISSION_GRANTED){
+                if (permissionCheckWrite == PackageManager.PERMISSION_GRANTED && permissionCheckRead == PackageManager.PERMISSION_GRANTED) {
                     sharePic();
                 }
                 return true;
@@ -300,10 +328,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void sendLink(ImageUploadResponse result, final File tempCaptureFile) {
-        Log.i("강래민","돌긴도나2");
+        Log.i("강래민", "돌긴도나2");
 
         String stringValue = null;
-        switch (dust25StringValue){
+        switch (dust25StringValue) {
             case "매우나쁨":
                 stringValue = "대기중에 미세먼지가 매우 많으므로 외출을 삼가해 주세요";
                 break;
@@ -320,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         FeedTemplate params = FeedTemplate
-                .newBuilder(ContentObject.newBuilder("미세먼지 : "+dust25StringValue,
+                .newBuilder(ContentObject.newBuilder("미세먼지 : " + dust25StringValue,
                         result.getOriginal().getUrl(),
                         LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
                                 .setMobileWebUrl("https://developers.kakao.com").build())
@@ -339,23 +367,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
-                Log.i("강래민","돌긴도나3");
 
                 tempCaptureFile.delete();
-                Log.e("실수","오마갓");
-                Log.e("실수2",errorResult.getErrorMessage().toString());
+
             }
 
             @Override
             public void onSuccess(KakaoLinkResponse result) {
-                Log.i("강래민","돌긴도나4");
-
                 tempCaptureFile.delete();
-                Log.e("성공","오마갓");
                 result.getTemplateMsg().toString();
+
             }
         });
     }
+
     private void getAppKeyHash() {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
@@ -374,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);// main_menu 메뉴를 toolbar 메뉴 버튼으로 설정
+        getMenuInflater().inflate(R.menu.menu, menu);// main_menu 메뉴를 toolbar 메뉴 버튼으로 설정
         return true;
     }
 
@@ -388,16 +413,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void startProgressbar(){
+    private void startProgressbar() {
         mprogressDialog = new ProgressDialog(this);
         mprogressDialog.setMessage("위치정보를 받아오는 중 입니다");
         mprogressDialog.show();
     }
 
     private void localDustlevelSetup() {
-        currentLocation = new CurrentLocation(this);
-        currentLocation.tmLookup(mhandler);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(MainActivity.this, "권한 허용 안되있음", Toast.LENGTH_SHORT).show();
+            TedPermission.with(this)
+                    .setPermissionListener(new PermissionListener() {
+                        @Override
+                        public void onPermissionGranted() {
+                            LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                                Toast.makeText(MainActivity.this, "GPS를 켜주세요", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(MainActivity.this, "허용 했고, 위치 켜져있음", Toast.LENGTH_SHORT).show();
+                                currentLocation.tmLookup(mhandler);
+                            }
+                        }
+
+                        @Override
+                        public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                            Toast.makeText(MainActivity.this, "이 앱을 사용하기 위해서 위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setRationaleMessage("앱을 사용하기 위해서 위치 권한이 필요합니다.")
+                    .setDeniedMessage("[설정] > [권한] 에서 권한을 허용할 수 있어요.")
+                    .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                    .check();
+        } else {
+            Toast.makeText(MainActivity.this, "권한 허용 되있음", Toast.LENGTH_SHORT).show();
+            currentLocation.tmLookup(mhandler);
+        }
     }
 
 
@@ -435,28 +488,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 locationName.setText(mStationDustreturns.getStationName());
                 locationDustLevel.setText(dustvaluelist.getPm10Value());
                 locationFineDustLevel.setText(dustvaluelist.getPm25Value());
-              //  setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
+                //  setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
 
                 DustLevelConverter converter = new DustLevelConverter();
-                converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
+                converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(), dustvaluelist.getPm25Value());
                 locationDustLevelText.setText(converter.getReturn10pm());
                 locationFineDustLevelText.setText(converter.getReturn25pm());
                 nodataTextView.setVisibility(View.GONE);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     finddustImage.setImageDrawable(getResources().getDrawable(converter.getReturnImage(), getApplicationContext().getTheme()));
-                }else{
+                } else {
                     finddustImage.setImageResource(converter.getReturnImage());
                 }
 
                 dust25StringValue = converter.getReturnAvgDustLevel();
-                converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
-                for(int i=0; i<22; i+=3)
-                {
+                converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(), dustvaluelist.getPm25Value());
+                for (int i = 0; i < 22; i += 3) {
                     StationDustreturns.list huijung = mStationDustreturns.getList().get(i);
-                    String datatime = huijung.getDataTime().substring(11,13);
-                    if(!huijung.getPm10Value().equals("-"))
-                    {
+                    String datatime = huijung.getDataTime().substring(11, 13);
+                    if (!huijung.getPm10Value().equals("-")) {
                         String pm10Value = converter.dust10ValuetoText(Integer.parseInt(huijung.getPm10Value()));
                         mAdapter.add(datatime, pm10Value);
                     }
@@ -465,8 +516,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 //mprogressDialog.dismiss();
-            }
-            else if(msg.what ==1){
+            } else if (msg.what == 1) {
                 nodataTextView.setVisibility(View.VISIBLE);
             }
             return false;
@@ -492,8 +542,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    public void getCurrentTime(){
-        SimpleDateFormat timeFormat = new SimpleDateFormat ( "a hh시 mm분 ");
+    public void getCurrentTime() {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("a hh시 mm분 ");
         Date time = new Date();
         String current = timeFormat.format(time);
         currentTime.setText(current);
@@ -507,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainRefreshLayout.setRefreshing(false);
     }
 
-    void searchApiInit(){
+    void searchApiInit() {
         ImageButton a = findViewById(R.id.places_autocomplete_search_button);
         a.setImageResource(R.color.colorGood);
 
@@ -525,19 +575,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         autocompleteFragment.setHint("");
 
         // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG,Place.Field.ADDRESS_COMPONENTS));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS_COMPONENTS));
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 String address;
-                if(place.getAddressComponents().asList().get(0).getTypes().get(0).equals("premise")){
+                if (place.getAddressComponents().asList().get(0).getTypes().get(0).equals("premise")) {
                     address = place.getAddressComponents().asList().get(1).getShortName();
                 } else {
                     address = place.getAddressComponents().asList().get(0).getShortName();
                 }
-                currentLocation.transcoord(place.getLatLng().longitude,place.getLatLng().latitude, address);
+                currentLocation.transcoord(place.getLatLng().longitude, place.getLatLng().latitude, address);
             }
+
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
