@@ -422,7 +422,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void localDustlevelSetup() {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MainActivity.this, "권한 허용 안되있음", Toast.LENGTH_SHORT).show();
             TedPermission.with(this)
                     .setPermissionListener(new PermissionListener() {
                         @Override
@@ -433,7 +432,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                 startActivity(intent);
                             } else {
-                                Toast.makeText(MainActivity.this, "허용 했고, 위치 켜져있음", Toast.LENGTH_SHORT).show();
                                 currentLocation.tmLookup(mhandler);
                             }
                         }
@@ -448,7 +446,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                     .check();
         } else {
-            Toast.makeText(MainActivity.this, "권한 허용 되있음", Toast.LENGTH_SHORT).show();
             currentLocation.tmLookup(mhandler);
         }
     }
