@@ -85,10 +85,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import retrofit2.http.HEAD;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
     static final String baseURL = "http://openapi.airkorea.or.kr/openapi/services/rest/";
-    private PermissionRequest permissionRequest;
-    private CurrentLocation mlocation;
 
     private TextView locationName, currentTime, locationDustLevel, locationDustLevelText, locationFineDustLevel, locationFineDustLevelText;
     private RecyclerView dailyRecyclerView,timeRecyclerView;
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_menu);
         co_this = this;
 
-        startProgressbar();
+        //startProgressbar();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -253,7 +253,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+
                 Log.e("윤희중","실패메세지");
+
+                Log.i("ㅁㄴㅇㄹ",errorResult.toString());
+
+
             }
 
             @Override
@@ -396,14 +401,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void localDustlevelSetup() {
-        //위치정보 퍼미션
-        permissionRequest = new PermissionRequest(this);
-        permissionRequest.locationAccess();
-
-        //현재위치 대기정보 가져오기
         currentLocation = new CurrentLocation(this);
         currentLocation.tmLookup(mhandler);
+
     }
+
 
     private void viewSetup() {
         locationName = findViewById(R.id.locationName_tv);
@@ -449,8 +451,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }else{
                     finddustImage.setImageResource(converter.getReturnImage());
                 }
+
                 dust25StringValue = converter.getReturnAvgDustLevel();
                 //dust25StringValue = converter.getReturn25pm();
+
+
                 converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(),dustvaluelist.getPm25Value());
                 for(int i=0; i<22; i+=3)
                 {
@@ -465,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
 
-                mprogressDialog.dismiss();
+                //mprogressDialog.dismiss();
             }
             return false;
         }
