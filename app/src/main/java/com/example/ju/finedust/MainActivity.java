@@ -252,6 +252,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return imagePath;
         }
     }
+    public void sharePic() {
+        sharecheck += 1;
+        Bitmap bitmap = takeScreenshot();
+        final File tempCaptureFile = saveBitmap(bitmap);
+        KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
 
     public void sharePic() {
         if(dust25StringValue == null){
@@ -273,6 +280,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
 
         }
+            @Override
+            public void onSuccess(ImageUploadResponse result) {
+                sendLink(result, tempCaptureFile);
+
+            }
+        });
     }
 
     @Override
@@ -351,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
+
                 tempCaptureFile.delete();
                 Toast.makeText(co_this, "카카오톡을 설치해주세요", Toast.LENGTH_SHORT).show();
                 if(errorResult.getErrorCode()==-777){
@@ -358,6 +372,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     intent.setData(Uri.parse("market://details?id=com.kakao.talk"));
                     startActivity(intent);
                 }
+                tempCaptureFile.delete();
+
+
             }
 
             @Override
