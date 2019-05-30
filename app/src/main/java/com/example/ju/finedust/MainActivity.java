@@ -167,12 +167,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void checkPermissionWriteExternalStorage(){
-        // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             } else {
@@ -189,35 +186,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sharePic();
-                // permission was granted, yay! Do the
-                // contacts-related task you need to do.
-
             } else {
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
+
             }
         } else if (requestCode == MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sharePic();
-                // permission was granted, yay! Do the
-                // contacts-related task you need to do.
-
             } else {
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
+
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
     public void checkPermissionReadExternalStorage(){
-        // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
@@ -251,13 +235,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
-                Log.i("ㅁㄴㅇㄹ",errorResult.toString());
 
             }
 
             @Override
             public void onSuccess(ImageUploadResponse result) {
-                Log.i("강래민","돌긴도나");
                 sendLink(result, tempCaptureFile);
             }
         });
@@ -300,9 +282,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void sendLink(ImageUploadResponse result, final File tempCaptureFile) {
-        Log.i("강래민","돌긴도나2");
-
-        String stringValue = null;
+        if(dust25StringValue == null){
+            dust25StringValue = "대기 정보를 받아올 수 없습니다.";
+        }
+        String stringValue = "대기 정보를 받아올 수 없어요.";
         switch (dust25StringValue){
             case "매우나쁨":
                 stringValue = "대기중에 미세먼지가 매우 많으므로 외출을 삼가해 주세요";
@@ -339,19 +322,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
-                Log.i("강래민","돌긴도나3");
-
                 tempCaptureFile.delete();
-                Log.e("실수","오마갓");
-                Log.e("실수2",errorResult.getErrorMessage().toString());
+                Toast.makeText(co_this, "카카오톡을 설치해주세요", Toast.LENGTH_SHORT).show();
+                if(errorResult.getErrorCode()==-777){
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("market://details?id=com.kakao.talk"));
+                    startActivity(intent);
+                }
             }
 
             @Override
             public void onSuccess(KakaoLinkResponse result) {
-                Log.i("강래민","돌긴도나4");
-
                 tempCaptureFile.delete();
-                Log.e("성공","오마갓");
                 result.getTemplateMsg().toString();
             }
         });
