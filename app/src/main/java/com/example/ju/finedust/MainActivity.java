@@ -187,12 +187,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void checkPermissionWriteExternalStorage() {
-        // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             } else {
@@ -210,36 +207,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sharePic();
-                // permission was granted, yay! Do the
-                // contacts-related task you need to do.
-
             } else {
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
+
             }
         } else if (requestCode == MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sharePic();
-                // permission was granted, yay! Do the
-                // contacts-related task you need to do.
-
             } else {
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
+
             }
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 
     public void checkPermissionReadExternalStorage() {
-        // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
@@ -268,7 +252,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return imagePath;
         }
     }
-
     public void sharePic() {
         sharecheck += 1;
         Bitmap bitmap = takeScreenshot();
@@ -276,18 +259,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
             @Override
             public void onFailure(ErrorResult errorResult) {
-                Log.i("ㅁㄴㅇㄹ", errorResult.toString());
 
-            }
+    public void sharePic() {
+        if(dust25StringValue == null){
+            Toast.makeText(co_this, "대기정보를 받아 올 수 없습니다.", Toast.LENGTH_SHORT).show();
+        } else {
+            sharecheck += 1;
+            Bitmap bitmap = takeScreenshot();
+            final File tempCaptureFile = saveBitmap(bitmap);
+            KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
+                @Override
+                public void onFailure(ErrorResult errorResult) {
 
+                }
+
+                @Override
+                public void onSuccess(ImageUploadResponse result) {
+                    sendLink(result, tempCaptureFile);
+                }
+            });
+
+        }
             @Override
             public void onSuccess(ImageUploadResponse result) {
-                Log.i("강래민", "돌긴도나");
                 sendLink(result, tempCaptureFile);
 
             }
         });
-
     }
 
     @Override
@@ -328,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void sendLink(ImageUploadResponse result, final File tempCaptureFile) {
-        Log.i("강래민", "돌긴도나2");
 
         String stringValue = null;
         switch (dust25StringValue) {
@@ -369,6 +366,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onFailure(ErrorResult errorResult) {
 
                 tempCaptureFile.delete();
+                Toast.makeText(co_this, "카카오톡을 설치해주세요", Toast.LENGTH_SHORT).show();
+                if(errorResult.getErrorCode()==-777){
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("market://details?id=com.kakao.talk"));
+                    startActivity(intent);
+                }
+                tempCaptureFile.delete();
+
 
             }
 
@@ -562,18 +567,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         b.setImageResource(R.color.colorGood);
 
         apiKeyGooglePlaces = getString(R.string.api_key_googlemap);
-        // Initialize Places.
         Places.initialize(getApplicationContext(), apiKeyGooglePlaces);
-        // Create a new Places client instance.
         final PlacesClient placesClient = Places.createClient(co_this);
-        // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setHint("");
-
-        // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS_COMPONENTS));
-        // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
