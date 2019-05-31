@@ -28,7 +28,7 @@
 - 메인화면
   GPS 사용 시 현재 위치와 대기정보를 보여줍니다.<br>
   GPS 미사용 시 마지막 위치의 정보나 검색한 위치의 정보를 보여줍니다.
-![main](images/main.jpg)
+<img src=images/main.jpg width=250>
 
 
 ---수정중---
