@@ -1,4 +1,4 @@
-# <img src=logo.jpg width=50> 미세그램
+# <img src=logo2.jpg width=50> 미세그램
 공공데이터 Api를 활용하여 미세먼지의 정보를 알려주는 어플
 
 ## 목차
