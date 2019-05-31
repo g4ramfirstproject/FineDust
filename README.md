@@ -8,10 +8,10 @@
 
 ## 참여인원
 
-- 강래민 [깃허브](https://github.com/kangraemin)
-- 박정호 [깃허브](https://github.com/Jpumpkin93)
-- 손유정 [깃허브](https://github.com/handnew04)
-- 윤희중 [깃허브](https://github.com/HuijungYoon)
+- 강래민 [(깃허브)](https://github.com/kangraemin)
+- 박정호 [(깃허브)](https://github.com/Jpumpkin93)
+- 손유정 [(깃허브)](https://github.com/handnew04)
+- 윤희중 [(깃허브)](https://github.com/HuijungYoon)
 
 ## API정보
 - **대기 정보**
@@ -54,7 +54,7 @@
 - **대기정보 공유**
   - 메인화면에서 오른쪽 상단의 공유 버튼을 눌러 카카오톡을 통해 공유할 수 있습니다.<br>
   - 현재 메인화면에 표시되는 대기정보를 공유합니다.
-  
+  <br>
   <img src=images/share.jpg width=250>
   
 - **위젯**
