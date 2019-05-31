@@ -39,20 +39,24 @@
 - **알람**
   - 메인화면의 왼쪽 상단의 버튼을 눌러 설정에 들어갑니다.<br>
   - 타임피커로 시간을 설정하면 매일 같은 시간에 알람이 옵니다.<br>
-  - 알람은 스위치 버튼으로 on/off 할 수 있습니다.<br>
+  - 알람은 스위치 버튼으로 on/off 할 수 있습니다.
+  
   <img src=images/timepicker.jpg width=250><img src= images/alarm.jpg width=250>
   
 - **장소 검색**  
   - 메인화면의 오른쪽 상단의 돋보기 버튼을 눌러 검색할 수 있습니다.<br>
-  - 장소를 선택하면 해당 장소의 대기정보를 메인화면에서 보여줍니다.<br>
-  <img src=images/search.jpg width=250><img src=images/searchdone.jpg width=250>
+  - 장소를 선택하면 해당 장소의 대기정보를 메인화면에서 보여줍니다.
+  
+  <img src=images/search.jpg width=250> <img src=images/searchdone.jpg width=250>
   
 - **대기정보 공유**
   - 메인화면에서 오른쪽 상단의 공유 버튼을 눌러 카카오톡을 통해 공유할 수 있습니다.<br>
-  - 현재 메인화면에 표시되는 대기정보를 공유합니다.<br>
+  - 현재 메인화면에 표시되는 대기정보를 공유합니다.
+  
   <img src=images/share.jpg width=250>
   
 - **위젯**
   - 어플의 위젯을 사용할 수 있습니다.<br>
-  - 위젯을 누르면 어플로 이동하고, 새로고침 버튼을 누르면 대기정보만 새로 받아옵니다.<br>
+  - 위젯을 누르면 어플로 이동하고, 새로고침 버튼을 누르면 대기정보만 새로 받아옵니다.
+  
   <img src=images/widget1.jpg width=250> <img src=images/widget2.jpg width=250>
