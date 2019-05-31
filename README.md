@@ -28,12 +28,14 @@
 - **메인 화면**
   - GPS 사용 시 현재 위치와 대기정보, 현재시간을 보여줍니다.<br>
   - GPS 미사용 시 마지막 위치의 정보나 검색한 위치의 정보를 보여줍니다.<br>
-  - 시간별 미세먼지 상황을 보여줍니다.<br>
+  - 시간별 미세먼지 상황을 보여줍니다.
+  
   <img src=images/main.jpg width=250>
 
 - **전국 미세먼지**
   - 메인화면의 왼쪽 상단의 버튼을 눌러 전국 미세먼지를 볼 수 있습니다.<br>
-  - 측정시간 및 전국의 각 미세먼지를 색상과 수치로 확인할 수 있습니다.<br>
+  - 측정시간 및 전국의 각 미세먼지를 색상과 수치로 확인할 수 있습니다.
+  
   <img src=images/map.jpg width=250>
 
 - **알람**
@@ -41,7 +43,7 @@
   - 타임피커로 시간을 설정하면 매일 같은 시간에 알람이 옵니다.<br>
   - 알람은 스위치 버튼으로 on/off 할 수 있습니다.
   
-  <img src=images/timepicker.jpg width=250><img src= images/alarm.jpg width=250>
+  <img src=images/timepicker.jpg width=250> <img src= images/alarm.jpg width=250>
   
 - **장소 검색**  
   - 메인화면의 오른쪽 상단의 돋보기 버튼을 눌러 검색할 수 있습니다.<br>
