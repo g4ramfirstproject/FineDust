@@ -17,7 +17,7 @@
 - **대기 정보**
   - 공공데이터 api
 - **위치(좌표) 정보**
-  - google map·location api, Kakao REST Api(좌표계 변환)
+  - google map·location api, Kakao REST pi(좌표계 변환)
 - **장소 검색**
   - google place api (Auto CompleteSupportFragment)
 - **공유 기능**
