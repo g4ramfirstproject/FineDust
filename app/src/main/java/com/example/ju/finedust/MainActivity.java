@@ -252,13 +252,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return imagePath;
         }
     }
-    public void sharePic() {
-        sharecheck += 1;
-        Bitmap bitmap = takeScreenshot();
-        final File tempCaptureFile = saveBitmap(bitmap);
-        KakaoLinkService.getInstance().uploadImage(this, false, tempCaptureFile, new ResponseCallback<ImageUploadResponse>() {
-            @Override
-            public void onFailure(ErrorResult errorResult) {
 
     public void sharePic() {
         if(dust25StringValue == null){
@@ -280,12 +273,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
 
         }
-            @Override
-            public void onSuccess(ImageUploadResponse result) {
-                sendLink(result, tempCaptureFile);
-
-            }
-        });
     }
 
     @Override
