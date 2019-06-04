@@ -1,7 +1,7 @@
 # <img src=logo2.png width=40> 미세그램
 공공데이터 Api를 활용하여 미세먼지의 정보를 알려주는 어플
 
-## 마켓 주소 
+###  주소 
 https://play.google.com/store/apps/details?id=com.g4ram.ju.finedust
 
 ## 목차
