@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SidoName">
+    tools:context="com.g4ram.ju.finedust.SidoName">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/RecyclerViewSidoName"
         android:layout_width="match_parent"

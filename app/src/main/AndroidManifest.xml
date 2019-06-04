@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ju.finedust">
+    package="com.g4ram.ju.finedust">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <receiver android:name=".NewAppWidget">
+        <receiver android:name="com.g4ram.ju.finedust.NewAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -27,7 +27,7 @@
                 android:resource="@xml/new_app_widget_info" />
         </receiver>
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.g4ram.ju.finedust.MainActivity">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -38,25 +38,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         <intent-filter>
-            <action android:name="android.intent.action.VIEW"/>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
+
             <data android:scheme="@string/kakao_scheme"
                 android:host="@string/kakaolink_host" />
         </intent-filter>
+            <meta-data
+                android:name="com.kakao.sdk.AppKey"
+                android:value="@string/kakao_app_key" />
     </activity>
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
-        <activity android:name=".SidoName" />
-        <activity android:name=".CityNamesInSido" />
-        <activity android:name=".EachCityDustInfo" />
-        <activity android:name=".NationWideFineDustActivity" />
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".NotificationActivity" />
+        <activity android:name="com.g4ram.ju.finedust.SidoName" />
+        <activity android:name="com.g4ram.ju.finedust.CityNamesInSido" />
+        <activity android:name="com.g4ram.ju.finedust.EachCityDustInfo" />
+        <activity android:name="com.g4ram.ju.finedust.NationWideFineDustActivity" />
+        <activity android:name="com.g4ram.ju.finedust.SearchActivity" />
+        <activity android:name="com.g4ram.ju.finedust.NotificationActivity" />
         <receiver
-            android:name=".NotificationReceiver"
+            android:name="com.g4ram.ju.finedust.NotificationReceiver"
             android:enabled="true"/>
-        <receiver android:name=".RestartReceiver" android:enabled="true">
+        <receiver android:name="com.g4ram.ju.finedust.RestartReceiver" android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
