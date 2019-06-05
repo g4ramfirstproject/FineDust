@@ -544,6 +544,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setHint("");
+        autocompleteFragment.setCountry("Kr");
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS_COMPONENTS));
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -554,6 +555,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     address = place.getAddressComponents().asList().get(0).getShortName();
                 }
+                sharecheck += 1;
                 currentLocation.transcoord(place.getLatLng().longitude, place.getLatLng().latitude, address);
             }
 
