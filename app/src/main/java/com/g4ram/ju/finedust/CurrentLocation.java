@@ -229,9 +229,6 @@ public class CurrentLocation {
                     mlatitude = location.getLatitude();
                     mlongitude = location.getLongitude();
 
-                    Log.e("위도", String.valueOf(mlatitude));
-                    Log.e("경도", String.valueOf(mlongitude));
-
                     transcoord(mlongitude, mlatitude);
                 }
 

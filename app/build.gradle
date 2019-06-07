@@ -43,7 +43,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //TedPermission
-    implementation 'gun0912.ted:tedpermission:2.1.0'
+    implementation 'gun0912.ted:tedpermission:2.2.0'
     //Butterknife
     implementation 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'

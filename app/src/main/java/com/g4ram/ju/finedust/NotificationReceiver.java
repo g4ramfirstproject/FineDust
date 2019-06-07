@@ -84,7 +84,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 builder.setAutoCancel(true);
 
                 NotificationManager manager = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-                if(Build.VERSION.SDK_INT > Build.VERSION_CODES.O){
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                     manager.createNotificationChannel(new NotificationChannel("default","기본 채널",
                             NotificationManager.IMPORTANCE_DEFAULT));
                 }
