@@ -478,7 +478,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 dust25StringValue = converter.getReturnAvgDustLevel();
                 converter.setMainImageAndLevelText(dustvaluelist.getPm10Value(), dustvaluelist.getPm25Value());
-                for (int i = 0; i < 22; i += 3) {
+
+                int listSize = mStationDustreturns.getList().size();
+                if (listSize > 21){
+                    listSize = 22;
+                }
+
+                for (int i = 0; i < listSize; i += 3) {
                     StationDustreturns.list huijung = mStationDustreturns.getList().get(i);
                     String datatime = huijung.getDataTime().substring(11, 13);
                     if (!huijung.getPm10Value().equals("-")) {
